@@ -1,0 +1,7 @@
+All genesets were downloaded from MSigDB:
+http://software.broadinstitute.org/gsea/downloads.jsp#msigdb
+
+c5.all.v6.1.mat : all GO annotations version 6.1
+c5.mf.v6.0.mat: GO annotations (molecular functions) version 6.0
+c2.cp.v6.0.mat: all canonical pathways version 6.0
+c2.all.v3.0.symbols_CP.mat: all canonical pathways version 3.0

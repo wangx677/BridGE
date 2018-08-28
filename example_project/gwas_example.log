@@ -1,0 +1,49 @@
+
+@----------------------------------------------------------@
+|        PLINK!       |     v1.07      |   10/Aug/2009     |
+|----------------------------------------------------------|
+|  (C) 2009 Shaun Purcell, GNU General Public License, v2  |
+|----------------------------------------------------------|
+|  For documentation, citation & bug-report instructions:  |
+|        http://pngu.mgh.harvard.edu/purcell/plink/        |
+@----------------------------------------------------------@
+
+Web-based version check ( --noweb to skip )
+Recent cached web-check found...Problem connecting to web
+
+Writing this text to log file [ gwas_example.log ]
+Analysis started: Mon Aug 27 15:11:35 2018
+
+Options in effect:
+	--bfile gwasdata_example
+	--make-bed
+	--out gwas_example
+
+Reading map (extended format) from [ gwasdata_example.bim ] 
+18815 markers to be included from [ gwasdata_example.bim ]
+Reading pedigree information from [ gwasdata_example.fam ] 
+961 individuals read from [ gwasdata_example.fam ] 
+954 individuals with nonmissing phenotypes
+Assuming a disease phenotype (1=unaff, 2=aff, 0=miss)
+Missing phenotype value is also -9
+449 cases, 505 controls and 7 missing
+0 males, 0 females, and 961 of unspecified sex
+Warning, found 961 individuals with ambiguous sex codes
+Writing list of these individuals to [ gwas_example.nosex ]
+Reading genotype bitfile from [ gwasdata_example.bed ] 
+Detected that binary PED file is v1.00 SNP-major mode
+Before frequency and genotyping pruning, there are 18815 SNPs
+961 founders and 0 non-founders found
+Total genotyping rate in remaining individuals is 0.998446
+0 SNPs failed missingness test ( GENO > 1 )
+0 SNPs failed frequency test ( MAF < 0 )
+After frequency and genotyping pruning, there are 18815 SNPs
+After filtering, 449 cases, 505 controls and 7 missing
+After filtering, 0 males, 0 females, and 961 of unspecified sex
+Writing pedigree information to [ gwas_example.fam ] 
+Writing map (extended format) information to [ gwas_example.bim ] 
+Writing genotype bitfile to [ gwas_example.bed ] 
+Using (default) SNP-major mode
+
+Analysis finished: Mon Aug 27 15:11:36 2018
+
