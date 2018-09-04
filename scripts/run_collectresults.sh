@@ -41,7 +41,7 @@ $*
     BPMind is a mat file that indicates SNP to BPM, SNP to WPM membership.
     Default is BPMind.mat
 
-  --snpPathwayFile=SNP2PATHWAY
+  --snpPathwayFile=snpPathwayFile
     Snp2pathway is a mat file that indicates SNP to pathway membership.
     Default is snp_pathway_min10_max300.mat
 

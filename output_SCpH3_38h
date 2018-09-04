@@ -1,0 +1,203 @@
+
+                            < M A T L A B (R) >
+                  Copyright 1984-2018 The MathWorks, Inc.
+                   R2018a (9.4.0.813654) 64-bit (glnxa64)
+                             February 23, 2018
+
+ 
+To get started, type one of these: helpwin, helpdesk, or demo.
+For product information, visit www.mathworks.com.
+ 
+
+                            < M A T L A B (R) >
+                  Copyright 1984-2018 The MathWorks, Inc.
+                   R2018a (9.4.0.813654) 64-bit (glnxa64)
+                             February 23, 2018
+
+ 
+To get started, type one of these: helpwin, helpdesk, or demo.
+For product information, visit www.mathworks.com.
+ 
+
+                            < M A T L A B (R) >
+                  Copyright 1984-2018 The MathWorks, Inc.
+                   R2018a (9.4.0.813654) 64-bit (glnxa64)
+                             February 23, 2018
+
+ 
+To get started, type one of these: helpwin, helpdesk, or demo.
+For product information, visit www.mathworks.com.
+ 
+
+ans =
+
+    '/project/csbio/wwang/BridGE'
+
+
+                            < M A T L A B (R) >
+                  Copyright 1984-2018 The MathWorks, Inc.
+                   R2018a (9.4.0.813654) 64-bit (glnxa64)
+                             February 23, 2018
+
+ 
+To get started, type one of these: helpwin, helpdesk, or demo.
+For product information, visit www.mathworks.com.
+ 
+
+ans =
+
+    '/project/csbio/wwang/BridGE'
+
+
+                            < M A T L A B (R) >
+                  Copyright 1984-2018 The MathWorks, Inc.
+                   R2018a (9.4.0.813654) 64-bit (glnxa64)
+                             February 23, 2018
+
+ 
+To get started, type one of these: helpwin, helpdesk, or demo.
+For product information, visit www.mathworks.com.
+ 
+
+ans =
+
+    '/project/csbio/wwang/BridGE'
+
+
+ans =
+
+  8x6 table
+
+            snps             genes     snp_mean_gi    snp_mean_gi_bg    gi_fold    gi_hyge
+    _____________________    ______    ___________    ______________    _______    _______
+
+    'chromosome15:670328'    'GAC1'          0.5          0.15564       3.2125      2.5672
+    'chromosome15:669720'    'GAC1'      0.42857          0.12517       3.4239      2.3337
+    'chromosome2:327832'     'GIP1'      0.28571         0.056895       5.0218      2.1856
+    'chromosome4:499794'     'REG1'      0.35714          0.12343       2.8934      1.6627
+    'chromosome15:668830'    'GAC1'      0.21429         0.079267       2.7033       1.029
+    'chromosome4:501348'     'REG1'      0.14286         0.051302       2.7846      0.7979
+    'chromosome12:691343'    'PIG1'     0.071429         0.016008       4.4621     0.69369
+    'chromosome2:327685'     'GIP1'     0.071429         0.027001       2.6454     0.49667
+
+
+ans =
+
+  4x6 table
+
+            snps              genes     snp_mean_gi    snp_mean_gi_bg    gi_fold    gi_hyge
+    _____________________    _______    ___________    ______________    _______    _______
+
+    'chromosome12:434516'    'PEP3'        0.2069         0.046673       4.4329      2.7295
+    'chromosome4:1438565'    'VPS3'       0.10345         0.021215       4.8762      1.6432
+    'chromosome16:467778'    'VPS16'     0.068966         0.020829        3.311     0.91562
+    'chromosome16:469713'    'VPS16'     0.034483         0.016779       2.0551     0.41045
+
+
+ans =
+
+  3x6 table
+
+            snps            genes     snp_mean_gi    snp_mean_gi_bg    gi_fold    gi_hyge
+    ____________________    ______    ___________    ______________    _______    _______
+
+    'chromosome7:43204'     'RTF1'      0.28571         0.087367       3.2703       1.547
+    'chromosome1:113416'    'CCR4'     0.071429          0.04513       1.5827     0.32187
+    'chromosome4:730340'    'HPR1'      0.14286          0.11321       1.2619     0.31711
+
+
+ans =
+
+  14x6 table
+
+            snps             genes     snp_mean_gi    snp_mean_gi_bg    gi_fold    gi_hyge
+    _____________________    ______    ___________    ______________    _______    _______
+
+    'chromosome16:372339'    'NOG1'      0.12941         0.068081       1.9008      1.5502
+    'chromosome15:832953'    'YTM1'          0.2          0.12575       1.5905       1.477
+    'chromosome14:627220'    'RLP7'     0.058824         0.022372       2.6293      1.3882
+    'chromosome15:186046'    'BRX1'     0.035294         0.014851       2.3766     0.88066
+    'chromosome15:834662'    'YTM1'      0.21176          0.16355       1.2948     0.84114
+    'chromosome8:211333'     'CIC1'     0.011765        0.0025072       4.6923     0.71317
+    'chromosome15:727788'    'NOC2'     0.070588         0.048602       1.4524     0.63662
+    'chromosome11:125293'    'EBP2'     0.011765        0.0032787       3.5882      0.6103
+    'chromosome11:425936'    'MRT4'     0.011765        0.0050145       2.3462     0.45591
+    'chromosome14:627123'    'RLP7'     0.011765        0.0052073       2.2593     0.44282
+    'chromosome13:369837'    'ERB1'     0.023529         0.015815       1.4878     0.40816
+    'chromosome11:591638'    'RPF2'     0.023529         0.017165       1.3708     0.36556
+    'chromosome11:427165'    'MRT4'     0.023529         0.017936       1.3118     0.34357
+    'chromosome11:125664'    'EBP2'     0.011765        0.0077146        1.525     0.31421
+
+
+ans =
+
+  10x6 table
+
+            snps              genes     snp_mean_gi    snp_mean_gi_bg    gi_fold    gi_hyge
+    _____________________    _______    ___________    ______________    _______    _______
+
+    'chromosome14:41218'     'PFS2'       0.28261          0.12073       2.3408      2.6315
+    'chromosome15:672316'    'SYC1'       0.28261          0.16876       1.6747      1.4372
+    'chromosome15:672177'    'SYC1'       0.23913           0.1433       1.6688      1.2512
+    'chromosome11:444125'    'PAP1'       0.13043         0.065959       1.9775      1.0995
+    'chromosome15:672107'    'SYC1'       0.13043         0.069238       1.8839      1.0208
+    'chromosome13:394791'    'RNA14'      0.21739          0.14253       1.5253     0.95975
+    'chromosome11:404905'    'SWD2'       0.15217         0.099132       1.5351     0.78074
+    'chromosome11:328028'    'MPE1'      0.021739        0.0063645       3.4157     0.59268
+    'chromosome15:672196'    'SYC1'      0.043478         0.022951       1.8944     0.54514
+    'chromosome11:445144'    'PAP1'      0.043478         0.025844       1.6823     0.47564
+
+
+ans =
+
+  10x6 table
+
+            snps              genes      snp_mean_gi    snp_mean_gi_bg    gi_fold    gi_hyge
+    _____________________    ________    ___________    ______________    _______    _______
+
+    'chromosome10:350017'    'RTT101'      0.37931          0.15911       2.3839      2.4711
+    'chromosome10:352608'    'RTT101'      0.27586          0.13963       1.9756      1.3945
+    'chromosome7:25663'      'RTG2'        0.17241         0.075024       2.2981      1.2092
+    'chromosome15:70183'     'HRT1'        0.10345         0.032594       3.1738      1.1745
+    'chromosome4:227079'     'CDC53'       0.10345         0.038766       2.6686     0.99844
+    'chromosome10:350651'    'RTT101'      0.27586          0.16972       1.6254     0.98049
+    'chromosome7:27799'      'RTG2'        0.24138          0.15198       1.5883     0.85498
+    'chromosome4:561566'     'CDC34'       0.13793          0.07136       1.9329      0.8284
+    'chromosome15:71038'     'HRT1'        0.13793          0.10839       1.2725     0.41283
+    'chromosome7:26299'      'RTG2'       0.034483         0.027387       1.2591     0.25647
+
+
+ans =
+
+  8x6 table
+
+            snps              genes     snp_mean_gi    snp_mean_gi_bg    gi_fold    gi_hyge
+    _____________________    _______    ___________    ______________    _______    _______
+
+    'chromosome14:41218'     'PFS2'       0.30435          0.14658       2.0764      2.3275
+    'chromosome15:672177'    'SYC1'       0.32609          0.18129       1.7987      1.8941
+    'chromosome15:672316'    'SYC1'       0.30435          0.18187       1.6734      1.5263
+    'chromosome11:404905'    'SWD2'       0.17391          0.10434       1.6668     0.99761
+    'chromosome13:394791'    'RNA14'      0.21739          0.17107       1.2708     0.59749
+    'chromosome15:672107'    'SYC1'       0.13043          0.10029       1.3006     0.50537
+    'chromosome11:445144'    'PAP1'      0.043478         0.033751       1.2882     0.33395
+    'chromosome11:328028'    'MPE1'      0.021739         0.016008        1.358     0.27939
+
+
+ans =
+
+  9x6 table
+
+            snps              genes     snp_mean_gi    snp_mean_gi_bg    gi_fold    gi_hyge
+    _____________________    _______    ___________    ______________    _______    _______
+
+    'chromosome14:41218'     'PFS2'       0.30435           0.1514       2.0102      2.1994
+    'chromosome15:672177'    'SYC1'       0.32609          0.18862       1.7288      1.7417
+    'chromosome15:672316'    'SYC1'       0.30435          0.19846       1.5336      1.2409
+    'chromosome11:404905'    'SWD2'       0.17391          0.12054       1.4428     0.73747
+    'chromosome11:444125'    'PAP1'       0.13043         0.089682       1.4544     0.64369
+    'chromosome15:672107'    'SYC1'       0.15217           0.1107       1.3746     0.61545
+    'chromosome13:394791'    'RNA14'      0.21739          0.17917       1.2133     0.51889
+    'chromosome15:672196'    'SYC1'      0.043478         0.034523       1.2594     0.32297
+    'chromosome11:445144'    'PAP1'      0.043478         0.035873        1.212     0.30473
+

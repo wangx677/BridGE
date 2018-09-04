@@ -1,8 +1,8 @@
 function add_yeast_GI_enrich(file)
 
-enrich_EE = readtable('/project/csbio/wwang/JHOU_Yeast/Data File S13_Genetic interaction enrichment among protein complexes.xlsx','Sheet','ExE complex network_all');
-enrich_EN = readtable('/project/csbio/wwang/JHOU_Yeast/Data File S13_Genetic interaction enrichment among protein complexes.xlsx','Sheet','ExN complex network_all');
-enrich_NN = readtable('/project/csbio/wwang/JHOU_Yeast/Data File S13_Genetic interaction enrichment among protein complexes.xlsx','Sheet','NxN complex network_all');
+enrich_EE = readtable('/project/csbio/wwang/yeast_1011strains/Data File S13_Genetic interaction enrichment among protein complexes.xlsx','Sheet','ExE complex network_all');
+enrich_EN = readtable('/project/csbio/wwang/yeast_1011strains/Data File S13_Genetic interaction enrichment among protein complexes.xlsx','Sheet','ExN complex network_all');
+enrich_NN = readtable('/project/csbio/wwang/yeast_1011strains/Data File S13_Genetic interaction enrichment among protein complexes.xlsx','Sheet','NxN complex network_all');
 
      
      try

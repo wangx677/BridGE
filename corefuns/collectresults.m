@@ -97,7 +97,7 @@ if (length(ind_bpm)>0 | length(ind_wpm)>0 | length(ind_path)>0)
           eff_bpm = reshape(eff_bpm,length(eff_bpm),1);
           
           for i = 1:length(ind_bpm)
-               [output_path1_snp, output_path2_snp] = get_interaction_pair(path1{i},path2{i},eff_bpm{i},ssmfile,bpmindfile,genesetfile,snppathwayfile,snpgenemappingfile);
+               [output_path1_snp, output_path2_snp] = get_interaction_pair(path1{i},path2{i},eff_bpm{i},ssmfile,bpmindfile,snppathwayfile,snpgenemappingfile);
                idx = find(output_path1_snp.gi_fold>1);
                
                if length(idx)>0
@@ -147,7 +147,7 @@ if (length(ind_bpm)>0 | length(ind_wpm)>0 | length(ind_path)>0)
           eff_wpm = reshape(eff_wpm,length(eff_wpm),1);
 
           for i=1:length(ind_wpm)
-               [output_path_snp] = get_interaction_pair(path_wpm{i},path_wpm{i},eff_wpm{i},ssmfile,bpmindfile,genesetfile,snppathwayfile,snpgenemappingfile);
+               [output_path_snp] = get_interaction_pair(path_wpm{i},path_wpm{i},eff_wpm{i},ssmfile,bpmindfile,snppathwayfile,snpgenemappingfile);
                idx = find(output_path_snp.gi_fold>1);
                
                if length(idx)>0
@@ -289,16 +289,25 @@ end
 if exist('bpm_pv_discovery','var')
      [tmp ind_bpm] = sortrows([fdrBPM bpm_pv_discovery bpm_ranksum_discovery],[1 2 -3]);
      output_bpm_table = output_bpm_table(ind_bpm,:);
+     index = [1:size(output_bpm_table,1)]';
+     index = table(index);
+     output_bpm_table = [index output_bpm_table];
 end
 
 if exist('wpm_pv_discovery','var')
      [tmp ind_wpm] = sortrows([fdrWPM wpm_pv_discovery wpm_ranksum_discovery],[1 2 -3]);
      output_wpm_table = output_wpm_table(ind_wpm,:);
+     index = [1:size(output_wpm_table,1)]';
+     index = table(index);
+     output_wpm_table = [index output_wpm_table];
 end
 
 if exist('path_pv_discovery','var')
      [tmp ind_path] = sortrows([fdrPATH path_pv_discovery path_ranksum_discovery],[1 2 -3]);
      output_path_table = output_path_table(ind_path,:);
+     index = [1:size(output_path_table,1)]';
+     index = table(index);
+     output_path_table = [index output_path_table];
 end
 
 writetable(output_discovery_summary,filename,'Sheet',1,'WriteRowNames',true)

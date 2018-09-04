@@ -1,4 +1,4 @@
-function [output_path1_snp, output_path2_snp] = get_interaction_pair(pathname1,pathname2,effect,ssmfile,bpmindfile,genesetfile,snppathwayfile,snpgenemappingfile,outputfile)
+function [output_path1_snp, output_path2_snp] = get_interaction_pair(pathname1,pathname2,effect,ssmfile,bpmindfile,snppathwayfile,snpgenemappingfile,outputfile);
 
 %pathname1 = 'KEGG_RIBOSOME';
 %pathname2 = 'KEGG_PARKINSONS_DISEASE';
@@ -8,11 +8,15 @@ function [output_path1_snp, output_path2_snp] = get_interaction_pair(pathname1,p
 
 load(ssmfile)
 load(bpmindfile)
-load(genesetfile)
 load(snppathwayfile)
+genesetfile = snpset.genesets;
+load(sprintf('%s/refdata/%s',getenv('BRIDGEPATH'),genesetfile));
 load(snpgenemappingfile)
 load('SNPdataAR.mat'); SNPdataAR = SNPdata.data;
 load('SNPdataAD.mat'); SNPdataAD = SNPdata.data;
+
+model = strsplit(ssmfile,'_');
+model = model{end-1};
 
 if ismember(effect,'protective')
      ssM_dis = squareform(ssM{1});
@@ -113,7 +117,7 @@ freq_control = zeros(length(i),1);
 
 for k=1:length(i)
      GI(k) = ssM_dis(i(k),j(k));
-     if exist('maxidx')
+     if strcmp(model,'combined')
           if maxidx(i(k),j(k))==1
                GItype{k} = 'recessive';
                freq_case(k) = nnz(SNPdataAR1(SNPdata.pheno==1,i(k)).*SNPdataAR2(SNPdata.pheno==1,j(k)))/nnz(SNPdata.pheno==1);
@@ -156,11 +160,57 @@ for k=1:length(i)
                end          
 
           end
+     elseif strcmp(model,'RR')
+
+          GItype{k} = 'recessive';
+          freq_case(k) = nnz(SNPdataAR1(SNPdata.pheno==1,i(k)).*SNPdataAR2(SNPdata.pheno==1,j(k)))/nnz(SNPdata.pheno==1);
+          freq_control(k) = nnz(SNPdataAR1(SNPdata.pheno==0,i(k)).*SNPdataAR2(SNPdata.pheno==0,j(k)))/nnz(SNPdata.pheno==0);
+          snp_pair(:,k) = SNPdataAR1(:,i(k)).*SNPdataAR2(:,j(k));
+
+     elseif strcmp(model,'DD')
+
+          GItype{k} = 'dominant';
+          freq_case(k) = nnz(SNPdataAD1(SNPdata.pheno==1,i(k)).*SNPdataAD2(SNPdata.pheno==1,j(k)))/nnz(SNPdata.pheno==1);
+          freq_control(k) = nnz(SNPdataAD1(SNPdata.pheno==0,i(k)).*SNPdataAD2(SNPdata.pheno==0,j(k)))/nnz(SNPdata.pheno==0);
+          snp_pair(:,k) = SNPdataAD1(:,i(k)).*SNPdataAD2(:,j(k));
+
+     elseif strcmp(model,'RD')
+
+           GItype{k} = 'recessive_dominant';
+           freq_case1 = nnz(SNPdataAD1(SNPdata.pheno==1,i(k)).*SNPdataAR2(SNPdata.pheno==1,j(k)))/nnz(SNPdata.pheno==1);
+           freq_control1 = nnz(SNPdataAD1(SNPdata.pheno==0,i(k)).*SNPdataAR2(SNPdata.pheno==0,j(k)))/nnz(SNPdata.pheno==0);
+           freq_case2 = nnz(SNPdataAR1(SNPdata.pheno==1,i(k)).*SNPdataAD2(SNPdata.pheno==1,j(k)))/nnz(SNPdata.pheno==1);
+           freq_control2 = nnz(SNPdataAR1(SNPdata.pheno==0,i(k)).*SNPdataAD2(SNPdata.pheno==0,j(k)))/nnz(SNPdata.pheno==0);
+           freqR1 = freq_case1/freq_control1;
+           freqR2 = freq_case2/freq_control2;
+
+           if ismember(effect,'protective')
+                if freqR1>freqR2
+                     freq_case(k) = freq_case2;
+                     freq_control(k) = freq_control2;
+                     snp_pair(:,k) = SNPdataAR1(:,i(k)).*SNPdataAD2(:,j(k));
+                else
+                     freq_case(k) = freq_case1;
+                     freq_control(k) = freq_control1;
+                     snp_pair(:,k) = SNPdataAD1(:,i(k)).*SNPdataAR2(:,j(k));
+                end
+           elseif ismember(effect,'risk')
+                if freqR1>freqR2
+                     freq_case(k) = freq_case1;
+                     freq_control(k) = freq_control1;
+                     snp_pair(:,k) = SNPdataAD1(:,i(k)).*SNPdataAR2(:,j(k));
+                else
+                     freq_case(k) = freq_case2;
+                     freq_control(k) = freq_control2;
+                     snp_pair(:,k) = SNPdataAR1(:,i(k)).*SNPdataAD2(:,j(k));
+                end
+           end
      end
 
 end
 
 output_pair = table(snps1,genes1,snps2,genes2,GItype,freq_case,freq_control,GI);
+output_pair = sortrows(output_pair,{'GI'},{'descend'});
 
 if exist('outputfile','var')
      writetable(output_pair,sprintf('%s.xls',outputfile),'Sheet',1);
@@ -184,6 +234,8 @@ output_path1_snp = table(snps,genes,snp_mean_gi,snp_mean_gi_bg,gi_fold,gi_hyge);
 
 [tmp ind] = sort(gi_fold,'descend');
 output_path1_snp = output_path1_snp(ind,:);
+output_path1_snp = output_path1_snp(find(output_path1_snp.gi_fold>1.2),:);
+output_path1_snp = sortrows(output_path1_snp,{'gi_hyge'},{'descend'});
 
 if exist('outputfile','var')
      writetable(output_path1_snp,sprintf('%s.xls',outputfile),'Sheet',2);
@@ -214,13 +266,23 @@ if isequal(pathname1,pathname2)~=1
 
      [tmp ind] = sort(gi_fold,'descend');
      output_path2_snp = output_path2_snp(ind,:);
-     
+     output_path2_snp = output_path2_snp(find(output_path2_snp.gi_fold>1.2),:);
+     output_path2_snp = sortrows(output_path2_snp,{'gi_hyge'},{'descend'});
+      
      if exist('outputfile','var')
-          writetable(output_path1_snp,sprintf('%s.xls',outputfile),'Sheet',3);
+          writetable(output_path2_snp,sprintf('%s.xls',outputfile),'Sheet',3);
+          interaction = 'BPM';
+          output_interaction = table(interaction,pathname1,pathname2);
+          writetable(output_interaction,sprintf('%s.xls',outputfile),'Sheet',4);
      end
      clear idx
 else
      output_path2_snp = nan;
+     if exist('outputfile','var')
+          interaction = 'WPM';
+          output_interaction = table(interaction,pathname1);
+          writetable(output_interaction,sprintf('%s.xls',outputfile),'Sheet',3);
+     end
 end
 
 if exist('outputfile','var')
