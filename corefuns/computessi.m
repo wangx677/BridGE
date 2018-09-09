@@ -84,7 +84,7 @@ else
                % data is not matched case-control
                 rand('seed',R+1);
                 phenonew = SNPdata.pheno(randperm(length(SNPdata.pheno)));
-           elseif exist('plinkFile.cluster2','file')~=2)
+           elseif exist('plinkFile.cluster2','file')~=2
                rand('seed',R+1);
                phenonew = SNPdata.pheno(randperm(length(SNPdata.pheno)));
            else
