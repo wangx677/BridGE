@@ -84,6 +84,9 @@ else
                % data is not matched case-control
                 rand('seed',R+1);
                 phenonew = SNPdata.pheno(randperm(length(SNPdata.pheno)));
+           elseif exist('plinkFile.cluster2','file')~=2)
+               rand('seed',R+1);
+               phenonew = SNPdata.pheno(randperm(length(SNPdata.pheno)));
            else
                 % randomized labels based on matched case-control shuffling
                 phenonew = withinclassrand(dataFile,plinkCluster2,R+1);
