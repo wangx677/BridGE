@@ -198,6 +198,11 @@ hyge1{2} = max(repmat(hyge1RiskRecessive',1,q),repmat(hyge1RiskDominant,p,1));
 
 % ssM11 - max(ssM00, ssM01, ssM10, hyge1)
 for tt=1:2
+     ssM00{tt}(isinf(ssM00{tt})) = 16;
+     ssM11{tt}(isinf(ssM11{tt})) = 16;
+     ssM10{tt}(isinf(ssM10{tt})) = 16;
+     ssM01{tt}(isinf(ssM01{tt})) = 16;
+     
      ssM{tt} = (ssM11{tt}-max(ssM00{tt},max(ssM01{tt},ssM10{tt}))).*pair2keep{tt};
 end
  

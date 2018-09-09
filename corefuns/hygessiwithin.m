@@ -173,6 +173,11 @@ hyge1{1} = squareform(hyge1{1});
 hyge1{2} = squareform(hyge1{2});
 
 for tt=1:2
+     ssM00{tt}(isinf(ssM00{tt})) = 16;
+     ssM11{tt}(isinf(ssM11{tt})) = 16;
+     ssM10{tt}(isinf(ssM10{tt})) = 16;
+     ssM01{tt}(isinf(ssM01{tt})) = 16;
+
      ssM{tt} = (ssM11{tt} - max(ssM00{tt},max(ssM10{tt},ssM01{tt}))).*squareform(pair2keep{tt});
 end
 
