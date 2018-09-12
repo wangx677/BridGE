@@ -14,6 +14,15 @@ $*
      Projectdir is the data directory where results will also be stored at.
      Default is the current directory.
 
+  --model=MODEL
+     Prefered interaction model which can be chosen from:
+          RR recessive-recessive interaction
+          DD dominant-dominant interaction
+          RD recessive-dominant interaction
+          combined combined all three interactions
+          AA additive-additive interaction
+     Default is combined.
+
   --minPath=MINPATH
      Minimum number of genes in the gene set.
      Default is 10.
@@ -32,6 +41,14 @@ $*
      randRun=0 for real run
      randRun=1,2,... for random runs
      This input is required.
+
+  --alpha1=ALPHA1
+     Marginal significance level for joint effect.
+     Defalut is 0.05.
+
+  --alpha2=ALPHA2
+     Marginal significance level for individual effects.
+     Default is 0.05.
     
 EOF
 }
@@ -53,16 +70,20 @@ do
      --snpPerms=*) snpPerms=${argument/*=/""} ;;
      --binaryNetwork=*) binaryNetwork=${argument/*=/""} ;;
      --randRun=*) randRun=${argument/*=/""} ;;
+     --alpha1=*) alpha1=${argument/*=/""} ;;
+     --alpha2=*) alpha2=${argument/*=/""} ;;
      esac
 done
 
 # set defaults
 if [ -z "${projectDir}" ]; then projectDir=`pwd`; fi
-if [ -z "${model}" ]; then echo "Please specify which (disease) model to proceed."; exit; fi
+if [ -z "${model}" ]; then model=combined; fi
 if [ -z "${minPath}" ]; then minPath=10; fi
 if [ -z "${snpPerms}" ]; then snpPerms=10000; fi
 if [ -z "${bnaryNetwork}" ]; then binaryNetwork=0; fi
 if [ -z "${randRun}" ]; then echo "Please specify randRun to proceed."; exit; fi
+if [ -z "${alpha1}" ]; then alpha1=0.05; fi
+if [ -z "${alpha2}" ]; then alpha2=0.05; fi
 
 cd ${projectDir}
 

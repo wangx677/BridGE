@@ -64,6 +64,6 @@ runsampleperm.sh --projectDir=$BRIDGEPATH/example_project --minPath=10 --model=R
 This step will compute false discovery rates, and write significant discoveries (with detailed statistical information and gene drivers) to an excel file.
 
 Example 2.4.1, run analysis on permutation results based on combined interaction: 
-bridge.sh --job=Analysis --projectDir=$BRIDGEPATH/example_project --model=combined  --samplePerms=10 --minPATH=10 --pvalueCutoff=0.05 --mappingDistance=500
+bridge.sh --job=Analysis --projectDir=$BRIDGEPATH/example_project --model=combined  --samplePerms=10 --minPath=10 --pvalueCutoff=0.05 --mappingDistance=500
 
-Inputs for --model --samplePerms --minPATH --mappingDistance  should also be specified (unless they are the same as the default values).
+Inputs for --model --samplePerms --minPath --mappingDistance  should also be specified (unless they are the same as the default values).
