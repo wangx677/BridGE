@@ -1,6 +1,6 @@
-function ssM = hygessiacross(datar,datad,pheno,alpha1,alpha2)
+function ssM = hygessiacross(datar,datad,pheno,marginal,alpha1,alpha2)
 
-% FUNCTION ssM = hygessiacross(datar,datad,pheno,alpha1,alpha2)
+% FUNCTION ssM = hygessiacross(datar,datad,pheno,marginal,alpha1,alpha2)
 % 
 % HYGESSIACROSS compute pairwise interactions between two datasets (e.g. recessive and dominant SNPs)
 %
@@ -12,6 +12,8 @@ function ssM = hygessiacross(datar,datad,pheno,alpha1,alpha2)
 %   datar - SNP data in recessive format 
 %   datad - SNP data in dominant format
 %   pheno - phenotype labels
+%   marginal - control individual SNP's marginal effect (joint mutation has to be more significant than the single SNP)
+%              1 means control, 0 means no control
 %   alpha1 - a signifcance constrain used in hygeSSI that controls joint mutation (11) significance
 %   alpha2 - a signifcance constrain used in hygeSSI that controls individual mutation (10,01)
 %     or wild type (00) signficance
@@ -27,7 +29,7 @@ end
 
 % if datar and datad are identical, run hygessiwithin 
 if isequal(datar,datad)==1
-    ssM = hygessiwithin(datar,pheno,alpha1,alpha2);
+    ssM = hygessiwithin(datar,pheno,marginal,alpha1,alpha2);
     return;
 end
 
@@ -203,7 +205,11 @@ for tt=1:2
      ssM10{tt}(isinf(ssM10{tt})) = 16;
      ssM01{tt}(isinf(ssM01{tt})) = 16;
      
-     ssM{tt} = (ssM11{tt}-max(ssM00{tt},max(ssM01{tt},ssM10{tt}))).*pair2keep{tt};
+     if marginal==0
+          ssM{tt} = (ssM11{tt}-max(ssM00{tt},max(ssM01{tt},ssM10{tt}))).*pair2keep{tt};
+     elseif marginal==1
+          ssM{tt} = (ssM11{tt}-max(ssM00{tt},max(ssM01{tt},max(ssM10{tt},hyge1{tt})))).*pair2keep{tt};
+     end
 end
  
 for tt=1:2

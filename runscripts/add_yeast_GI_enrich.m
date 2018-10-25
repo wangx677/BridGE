@@ -1,5 +1,7 @@
 function add_yeast_GI_enrich(file)
 
+%file = 'output_results_ssM_hygeSSI_alpha10.05_alpha20.05_combined_R0.mat.xls'
+
 enrich_EE = readtable('/project/csbio/wwang/yeast_1011strains/Data File S13_Genetic interaction enrichment among protein complexes.xlsx','Sheet','ExE complex network_all');
 enrich_EN = readtable('/project/csbio/wwang/yeast_1011strains/Data File S13_Genetic interaction enrichment among protein complexes.xlsx','Sheet','ExN complex network_all');
 enrich_NN = readtable('/project/csbio/wwang/yeast_1011strains/Data File S13_Genetic interaction enrichment among protein complexes.xlsx','Sheet','NxN complex network_all');

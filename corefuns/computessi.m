@@ -1,4 +1,4 @@
-function computessi(model,alpha1,alpha2,plinkCluster2,nWorker,R)
+function computessi(model,marginal,alpha1,alpha2,plinkCluster2,nWorker,R)
 
 % FUNCTION computessi(model,alpha1,alpha2,plinkCluster2,nWorker,R)
 %
@@ -6,6 +6,8 @@ function computessi(model,alpha1,alpha2,plinkCluster2,nWorker,R)
 % 
 % INPUTS:
 %   model - disease model assumptions
+%   marginal - control individual SNP's marginal effect (joint mutation has to be more significant than the single SNP)
+%              1 means control, 0 means no control
 %   alpha1 - a signifcance constrain used in hygeSSI that controls joint mutation (11) significance 
 %   alpha2 - a signifcance constrain used in hygeSSI that controls individual mutation (10,01) 
 %          or wild type (00) signficance
@@ -18,10 +20,6 @@ function computessi(model,alpha1,alpha2,plinkCluster2,nWorker,R)
 %  A mat-file include a matrix vector (size of 2) ssM. It's named based on given disease model. 
 % 
 
-if (nargin > 5)
-    sprintf('Incorrect number of input arguments!');
-end
-
 % if sample permutation file doesn't exist
 % create parallel pool
 pr = gcp('nocreate');
@@ -33,13 +31,29 @@ else
 end
 
 if strcmp(model,'RR')
-     ssmFile = sprintf('ssM_hygeSSI_alpha1%s_alpha2%s_RR',num2str(alpha1),num2str(alpha2));
+     if marginal==1
+          ssmFile = sprintf('ssM_hygeSSI_alpha1%s_alpha2%s_RR',num2str(alpha1),num2str(alpha2));
+     elseif marginal==0
+          ssmFile = sprintf('ssM_mhygeSSI_alpha1%s_alpha2%s_RR',num2str(alpha1),num2str(alpha2));
+     end
 elseif strcmp(model,'DD')
-     ssmFile = sprintf('ssM_hygeSSI_alpha1%s_alpha2%s_DD',num2str(alpha1),num2str(alpha2));
+     if marginal==1
+          ssmFile = sprintf('ssM_hygeSSI_alpha1%s_alpha2%s_DD',num2str(alpha1),num2str(alpha2));
+     elseif marginal==0
+          ssmFile = sprintf('ssM_mhygeSSI_alpha1%s_alpha2%s_DD',num2str(alpha1),num2str(alpha2));
+     end
 elseif strcmp(model,'RD')
-     ssmFile = sprintf('ssM_hygeSSI_alpha1%s_alpha2%s_RD',num2str(alpha1),num2str(alpha2));
+     if marginal==1
+          ssmFile = sprintf('ssM_hygeSSI_alpha1%s_alpha2%s_RD',num2str(alpha1),num2str(alpha2));
+     elseif marginal==0
+          ssmFile = sprintf('ssM_mhygeSSI_alpha1%s_alpha2%s_RD',num2str(alpha1),num2str(alpha2));
+     end
 elseif strcmp(model,'combined')
-     ssmFile = sprintf('ssM_hygeSSI_alpha1%s_alpha2%s_combined',num2str(alpha1),num2str(alpha2));
+     if marginal==1
+          ssmFile = sprintf('ssM_hygeSSI_alpha1%s_alpha2%s_combined',num2str(alpha1),num2str(alpha2));
+     elseif marginal==0
+          ssmFile = sprintf('ssM_mhygeSSI_alpha1%s_alpha2%s_combined',num2str(alpha1),num2str(alpha2));
+     end
 elseif strcmp(model,'AA')
      ssmFile = 'ssM_lr_cassi_pv0.05';
 end
@@ -65,7 +79,7 @@ if R==0
                pr = 1;
           end
 
-          parallelhygssi(model,alpha1,alpha2,nWorker,kk,R);
+          parallelhygssi(model,marginal,alpha1,alpha2,nWorker,kk,R);
  
      elseif strcmp(model,'AA')
           % compute SNP-SNP interaction based on logistic regression
@@ -80,7 +94,10 @@ else
           phenonew = SNPdata.randpheno(R,:);
      else
           % if no pre-defined random phenotype label exists
-          if (nnz(SNPdata.pheno==0)~=nnz(SNPdata.pheno==1) & exist('plinkFile.cluster2','file')~=2)
+          if isfield(SNPdata,'rand_pheno')
+               % sample randomization is done indpendently
+               phenonew = SNPdata.rand_pheno(:,R);
+          elseif (nnz(SNPdata.pheno==0)~=nnz(SNPdata.pheno==1) & exist('plinkFile.cluster2','file')~=2)
                % data is not matched case-control
                 rand('seed',R+1);
                 phenonew = SNPdata.pheno(randperm(length(SNPdata.pheno)));
@@ -95,7 +112,7 @@ else
             
      % compute ssM matrix with random phenotype labels 
      if strcmp(model,'AA')~=1
-          parallelhygssi(model,alpha1,alpha2,nWorker,kk,R,phenonew);	
+          parallelhygssi(model,marginal,alpha1,alpha2,nWorker,kk,R,phenonew);	
      elseif strcmp(model,'AA')
           % generate random plink file based on phenonew
           phenonew = phenonew+1; % in plink 1=control and 2=case

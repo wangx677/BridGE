@@ -1,6 +1,6 @@
-function ssM = hygessiwithin(data,pheno,alpha1,alpha2)
+function ssM = hygessiwithin(data,pheno,marginal,alpha1,alpha2)
 
-% FUNCTION ssM = hygessiwithin(data,pheno,alpha1,alpha2)
+% FUNCTION ssM = hygessiwithin(data,pheno,marginal,alpha1,alpha2)
 % 
 % HYGESSIWITHIN compute pairwise using same set of data (e.g. recessive-recessive 
 % or dominant-dominant SNP-SNP interactions)
@@ -9,6 +9,8 @@ function ssM = hygessiwithin(data,pheno,alpha1,alpha2)
 %   datar - SNP data in recessive format 
 %   datad - SNP data in dominant format
 %   pheno - phenotype labels
+%   marginal - control individual SNP's marginal effect (joint mutation has to be more significant than the single SNP)
+%              1 means control, 0 means no control
 %   alpha1 - a signifcance constrain used in hygeSSI that controls joint mutation (11) significance
 %   alpha2 - a signifcance constrain used in hygeSSI that controls individual mutation (10,01)
 %      or wild type (00) signficance
@@ -177,8 +179,12 @@ for tt=1:2
      ssM11{tt}(isinf(ssM11{tt})) = 16;
      ssM10{tt}(isinf(ssM10{tt})) = 16;
      ssM01{tt}(isinf(ssM01{tt})) = 16;
-
-     ssM{tt} = (ssM11{tt} - max(ssM00{tt},max(ssM10{tt},ssM01{tt}))).*squareform(pair2keep{tt});
+     
+     if marginal==0
+          ssM{tt} = (ssM11{tt} - max(ssM00{tt},max(ssM10{tt},ssM01{tt}))).*squareform(pair2keep{tt});
+     elseif marginal==1
+          ssM{tt} = (ssM11{tt} - max(ssM00{tt},max(max(ssM10{tt},ssM01{tt}),hyge1{tt}))).*squareform(pair2keep{tt});
+     end
 end
 
 for tt=1:2

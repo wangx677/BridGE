@@ -1,6 +1,6 @@
 phenos = {'SC4NQO01ugml_38h','SCCHX05ugml_38h','SCpH3_38h','SCpH8_38h','YPD42_40h','YPDCHX05_40h','YPDSDS_40h','YPGLYCEROL_40h'};
 models = {'DD','RD','RR','combined'};
-binarization = {'t25_b50','t50_b25'};
+binarization = {'t25_b50','t50_b25','t25_b25'};
 
 % same pathway standard was used across data
 for m = 1:length(binarization)

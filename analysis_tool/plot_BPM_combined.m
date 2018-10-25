@@ -1,11 +1,11 @@
-function plot_BPM_combined(pathname1,pathname2,model,riskornot,outputname,snppathwayfile,BPMindfile,dencut)
+%function plot_BPM_combined(pathname1,pathname2,model,riskornot,outputname,snppathwayfile,BPMindfile,denscut)
 
-% pathname1='PID_P38_GAMMA_DELTA_PATHWAY';
-% pathname2='REACTOME_TRAFFICKING_OF_AMPA_RECEPTORS';
-% model='combined';
-% riskornot=0
-% outputname='MSSNG_P38_AMPA.pdf'
-% snppathwayfile='snp_pathway_min10_max300.mat';
+% pathname1='GPI-anchor transamidase complex';
+% pathname2='nuclear pore';
+% model='DD';
+% riskornot=1;
+% outputname='GPI_nuclear_pore.pdf'
+% snppathwayfile='snp_pathway_min5_max300.mat';
 % BPMindfile='BPMind.mat'
 % denscut=0.2;
 
@@ -69,72 +69,88 @@ a=sum(data_AR(pheno==1,:));
 b=sum(data_AR(pheno==0,:));
 c=nnz(pheno==1)-a;
 d=nnz(pheno==0)-b;
-chi=hygetest(length(pheno),nnz(pheno==1),a,a+b);
-chi2p_tmp1=chi;
+hyge=hygetest(length(pheno),nnz(pheno==1),a,a+b);
+hyge_tmp1=hyge;
 
 a=sum(data_AD(pheno==1,:));
 b=sum(data_AD(pheno==0,:));
 c=nnz(pheno==1)-a;
 d=nnz(pheno==0)-b;
-chi=hygetest(length(pheno),nnz(pheno==1),a,a+b);
-chi2p_tmp2=chi;
+hyge=hygetest(length(pheno),nnz(pheno==1),a,a+b);
+hyge_tmp2=hyge;
 
 MM = MM(ind1, ind2);
-MMmax = MMmax(ind1,ind2);
-MMmax(MM==0) = 0;
+if exist('MMmax','var')
+     MMmax = MMmax(ind1,ind2);
+     MMmax(MM==0) = 0;
+end
 
-chi2p_ind1_mm = chi2p_tmp1(ind1);
-chi2p_ind1_MM = chi2p_tmp2(ind1);
+hyge_ind1_mm = hyge_tmp1(ind1);
+hyge_ind1_MM = hyge_tmp2(ind1);
 
-chi2p_ind2_mm = chi2p_tmp1(ind2);
-chi2p_ind2_MM = chi2p_tmp2(ind2);
+hyge_ind2_mm = hyge_tmp1(ind2);
+hyge_ind2_MM = hyge_tmp2(ind2);
 
 chromoID_ind1 = chromoID(ind1);
 chromoID_ind2 = chromoID(ind2);
 
-test_ind1 = arrayfun(@(x)unique(MMmax(x,:)),1:length(ind1),'uniform',0);
-test_ind2 = arrayfun(@(x)unique(MMmax(:,x)),1:length(ind2),'uniform',0);
+if exist('MMmax','var')
+     test_ind1 = arrayfun(@(x)unique(MMmax(x,:)),1:length(ind1),'uniform',0);
+     test_ind2 = arrayfun(@(x)unique(MMmax(:,x)),1:length(ind2),'uniform',0);
+end
 
-for i=1:length(test_ind1)
-	tmp = test_ind1{i}(2:end);
-	if length(tmp)>0
-	for j=1:length(tmp);
-		if (tmp(j)==1)
-			tmp_p(j) = chi2p_ind1_mm(i);
-		elseif (tmp(j)==2)
-			tmp_p(j) = chi2p_ind1_MM(i);
-		elseif (tmp(j)==3)
-			tmp_p(j) = max(chi2p_ind1_mm(i),chi2p_ind1_MM(i));
-		end
-	end
-	chi2p_ind1(i) = max(tmp_p(j));
-	clear tmp_p
-	end
+if strcmp(model,'combined')
+     for i=1:length(test_ind1)
+	     tmp = test_ind1{i}(2:end);
+	     if length(tmp)>0
+	          for j=1:length(tmp);
+	     	     if (tmp(j)==1)
+		     	     tmp_p(j) = hyge_ind1_mm(i);
+		          elseif (tmp(j)==2)
+			          tmp_p(j) = hyge_ind1_MM(i);
+		          elseif (tmp(j)==3)
+			          tmp_p(j) = max(hyge_ind1_mm(i),hyge_ind1_MM(i));
+		          end
+	          end
+	          hyge_ind1(i) = max(tmp_p(j));
+	          clear tmp_p
+	     end
+     end
+elseif strcmp(model,'RR')
+     hyge_ind1 = hyge_ind1_mm;
+elseif strcmp(model,'DD')
+     hyge_ind1 = hyge_ind1_MM;
 end
  
-
-for i=1:length(test_ind2)
-        tmp = test_ind2{i}(2:end);
-        if length(tmp)>0
-        for j=1:length(tmp);
-                if (tmp(j)==1)
-                        tmp_p(j) = chi2p_ind2_mm(i);
-                elseif (tmp(j)==2)
-                        tmp_p(j) = chi2p_ind2_MM(i);
-                elseif (tmp(j)==3)
-                        tmp_p(j) = max(chi2p_ind2_mm(i),chi2p_ind2_MM(i));
-                end
-        end
-        chi2p_ind2(i) = max(tmp_p(j));
-        clear tmp_p
-        end
+if strcmp(model,'combined')
+     for i=1:length(test_ind2)
+          tmp = test_ind2{i}(2:end);
+          if length(tmp)>0
+               for j=1:length(tmp);
+                    if (tmp(j)==1)
+                         tmp_p(j) = hyge_ind2_mm(i);
+                    elseif (tmp(j)==2)
+                         tmp_p(j) = hyge_ind2_MM(i);
+                    elseif (tmp(j)==3)
+                         tmp_p(j) = max(hyge_ind2_mm(i),hyge_ind2_MM(i));
+                    end
+               end
+               hyge_ind2(i) = max(tmp_p(j));
+               clear tmp_p
+           end
+     end
+elseif strcmp(model,'RR')
+     hyge_ind2 = hyge_ind1_mm;
+elseif strcmp(model,'DD')
+     hyge_ind2 = hyge_ind2_MM;
 end
 
-chi2p_ind1(chi2p_ind1<=0.01) = 0.01;
-chi2p_ind2(chi2p_ind2<=0.01) = 0.01; 
+
+hyge_ind1(hyge_ind1<=0.01) = 0.01;
+hyge_ind2(hyge_ind2<=0.01) = 0.01; 
 
 rgb22={'Violet','Turquoise','YellowGreen','Khaki','Salmon','HotPink','Goldenrod',...
-    'SteelBlue','LightSeaGreen','Peru','IndianRed','LightSlateGray','DarkOrchid','CadetBlue',...
+    'SteelBlue','LightSeaGreen','Peru','IndianRed','LightSlateGray','DarkOrd','CadetBlue',...
     'SeaGreen','Moccasin','DimGray','MediumPurple','DodgerBlue','DarkKhaki','RosyBrown','Darkolivegreen'};
 
 
@@ -164,29 +180,32 @@ idx2 = find(sum(MM,1)~=0);
 MM = MM(idx1,idx2);
 idx1 = 1:length(idx1);
 idx2 = 1:length(idx2);
-chi2p_ind1 = chi2p_ind1(idx1);
-chi2p_ind2 = chi2p_ind2(idx2);
+hyge_ind1 = hyge_ind1(idx1);
+hyge_ind2 = hyge_ind2(idx2);
 chromoID_ind1 = chromoID_ind1(idx1);
 chromoID_ind2 = chromoID_ind2(idx2);
 
 
 bb = (max(length(idx1),length(idx2))-min(length(idx1),length(idx2)))/2;
-
+max1 = 0;
 for i=1:22
     tt = find(chromoID_ind2(idx2)==i);
     if (nnz(tt)~=0)
-    line([p2*ones(size(idx2(tt)));chi2p_ind2(idx2(tt))/2+p2],[tt';tt'],'Color',rgb(rgb22{i}),'LineWidth',2)
+    line([p2*ones(size(idx2(tt)));hyge_ind2(idx2(tt))/2+p2],[tt';tt'],'Color',rgb(rgb22{i}),'LineWidth',2)
     %plot(p2*ones(size(idx2(tt)))-0.02,tt','.','color',[[218/255,165/255,32/255]]);
     plot(p2*ones(size(idx2(tt)))-0.02,tt','.','color',[[0.5,0.5,0.5]]);	
+    max1 = max(max1,max(hyge_ind2(idx2(tt))));
     end
 end
 
+max2 = 0;
 for i=1:22
     tt = find(chromoID_ind1(idx1)==i);
     if (nnz(tt)~=0)
-    line([p1*ones(size(idx1(tt)));-(chi2p_ind1(idx1(tt)))/2+p1],bb+[tt';tt'],'Color',rgb(rgb22{i}),'LineWidth',2)
+    line([p1*ones(size(idx1(tt)));-(hyge_ind1(idx1(tt)))/2+p1],bb+[tt';tt'],'Color',rgb(rgb22{i}),'LineWidth',2)
     %plot(p1*ones(size(idx1(tt)))+0.02,bb+tt','.','color',[[218/255,165/255,32/255]]);
     plot(p1*ones(size(idx1(tt)))+0.02,bb+tt','.','color',[[0.5,0.5,0.5]]);	
+    max2 = max(max2,max(hyge_ind1(idx1(tt)))); 
     end
 end
 
@@ -209,14 +228,19 @@ line([s1 s1],[0 length(idx2)+1],'LIneStyle','--','COlor',[0.5,0.5,0.5])
 %end
 %xlim([-1 5])
 ylim([-5 length(idx2)+5]);
-xlim([-1.5 3.5])
+% xlim([-1.5 3.5])
+xlim([-max(hyge_ind1(ii))/2-0.1, max(hyge_ind2(jj))/2+2+0.1])
 ax1=gca;
 
 setfig
 set(ax1,'box','off')
 set(ax1,'Ycolor','w')
 set(ax1,'tickdir','out')
-set(ax1,'Xtick',[-1.5:0.5:3.5],'XtickLabel',{'2.5','2','1','0','','','','0','1','2','2.5'})
+% set(ax1,'Xtick',[-1.5:0.5:3.5],'XtickLabel',{'2.5','2','1','0','','','','0','1','2','2.5'})
+xt = [round(-max(hyge_ind1(ii)))*100/100+1:0.5:round(max(hyge_ind2(jj)))*100/100+1];
+xl = arrayfun(@(x)num2str(abs(x)),round(-max(hyge_ind1(ii)))*100/100:0.5:round(max(hyge_ind2(jj)))*100/100,'Uniform',0);
+set(ax1,'Xtick',xt,'XtickLabel',xl)
+
 set(gca,'YTick',[])
 set(gca,'YColor','w')
 
@@ -224,7 +248,3 @@ t = title(sprintf('%s \n %s',pathname1,pathname2))
 set(t,'Interpreter','none')
 
 saveas(gcf,outputname)
-
-
-
-

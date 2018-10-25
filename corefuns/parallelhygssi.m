@@ -1,4 +1,4 @@
-function ssM = parallelhygssi(model,alpha1,alpha2,nWorker,nMatrices,R,NewPheno)
+function ssM = parallelhygssi(model,marginal,alpha1,alpha2,nWorker,nMatrices,R,NewPheno)
 
 % FUNCTION ssM = parallelhygssi(model,alpha1,alpha2,nWorker,k,R,NewPheno)
 %
@@ -11,6 +11,8 @@ function ssM = parallelhygssi(model,alpha1,alpha2,nWorker,nMatrices,R,NewPheno)
 %    DD: both SNPs are dominant;
 %    RD: one SNP is recessive and another is dominant
 %    combined: take maximum score of 1,2,3 as interaction score
+%    marginal - control individual SNP's marginal effect (joint mutation has to be more significant than the single SNP)
+%              1 means control, 0 means no control
 % alpha1 - a signifcance constrain used in hygeSSI that controls joint mutation (11) significance
 % alpha2 - a signifcance constrain used in hygeSSI that controls individual mutation (10,01) 
 %          or wild type (00) signficance
@@ -50,13 +52,29 @@ end
 % define file name
 switch model
 case 'RR' % recessive-recessive interaction
-     filename = sprintf('ssM_hygeSSI_alpha1%s_alpha2%s_RR_R%s.mat',num2str(alpha1),num2str(alpha2),num2str(R));
+     if marginal==0
+          filename = sprintf('ssM_mhygeSSI_alpha1%s_alpha2%s_RR_R%s.mat',num2str(alpha1),num2str(alpha2),num2str(R));
+     elseif marginal==1
+          filename = sprintf('ssM_hygeSSI_alpha1%s_alpha2%s_RR_R%s.mat',num2str(alpha1),num2str(alpha2),num2str(R));
+     end
 case 'DD' % dominant-dominant interaction
-     filename = sprintf('ssM_hygeSSI_alpha1%s_alpha2%s_DD_R%s.mat',num2str(alpha1),num2str(alpha2),num2str(R));
+     if marginal==0
+          filename = sprintf('ssM_mhygeSSI_alpha1%s_alpha2%s_DD_R%s.mat',num2str(alpha1),num2str(alpha2),num2str(R));
+     elseif marginal==1
+          filename = sprintf('ssM_hygeSSI_alpha1%s_alpha2%s_DD_R%s.mat',num2str(alpha1),num2str(alpha2),num2str(R));
+     end
 case 'RD' % recessive-dominant interaction
-     filename = sprintf('ssM_hygeSSI_alpha1%s_alpha2%s_RD_R%s.mat',num2str(alpha1),num2str(alpha2),num2str(R));
+     if marginal==0
+          filename = sprintf('ssM_mhygeSSI_alpha1%s_alpha2%s_RD_R%s.mat',num2str(alpha1),num2str(alpha2),num2str(R));
+     elseif marginal==1
+          filename = sprintf('ssM_hygeSSI_alpha1%s_alpha2%s_RD_R%s.mat',num2str(alpha1),num2str(alpha2),num2str(R));
+     end
 case 'combined' % combined interaction
-     filename = sprintf('ssM_hygeSSI_alpha1%s_alpha2%s_combined_R%s.mat',num2str(alpha1),num2str(alpha2),num2str(R));
+     if marginal==0
+          filename = sprintf('ssM_mhygeSSI_alpha1%s_alpha2%s_combined_R%s.mat',num2str(alpha1),num2str(alpha2),num2str(R));
+     elseif marginal==1
+          filename = sprintf('ssM_hygeSSI_alpha1%s_alpha2%s_combined_R%s.mat',num2str(alpha1),num2str(alpha2),num2str(R));
+     end
 end
 
 if exist(filename,'file')==0
@@ -117,7 +135,7 @@ if exist(filename,'file')==0
           end
           
           % parallel computing
-          ssM = parforhygessi(data,data,i1,i2,j1,j2,pheno,alpha1,alpha2,N);
+          ssM = parforhygessi(data,data,i1,i2,j1,j2,pheno,marginal,alpha1,alpha2,N);
           save(filename,'ssM','-v7.3');
 
      case 'DD'
@@ -133,7 +151,7 @@ if exist(filename,'file')==0
           end
           
           % parallel computing
-          ssM = parforhygessi(data,data,i1,i2,j1,j2,pheno,alpha1,alpha2,N);
+          ssM = parforhygessi(data,data,i1,i2,j1,j2,pheno,marginal,alpha1,alpha2,N);
           save(filename,'ssM','-v7.3');
 
      case 'RD'
@@ -148,7 +166,7 @@ if exist(filename,'file')==0
           end
 
           % parallel computing
-          ssM = parforhygessi(datar,datad,i1,i2,j1,j2,pheno,alpha1,alpha2,N);
+          ssM = parforhygessi(datar,datad,i1,i2,j1,j2,pheno,marginal,alpha1,alpha2,N);
           save(filename,'ssM','-v7.3');
 
      case 'combined'
@@ -161,23 +179,36 @@ if exist(filename,'file')==0
           
           % if recessive-recessive, dominant-dominant, recessive-dominant interaction files don't exist,
           % call parallelhygssi to compute them
-          file1 = sprintf('ssM_hygeSSI_alpha1%s_alpha2%s_RR_R%s.mat',num2str(alpha1),num2str(alpha2),num2str(R));
+          if marginal==1
+               file1 = sprintf('ssM_hygeSSI_alpha1%s_alpha2%s_RR_R%s.mat',num2str(alpha1),num2str(alpha2),num2str(R));
+          elseif marginal==0
+               file1 = sprintf('ssM_mhygeSSI_alpha1%s_alpha2%s_RR_R%s.mat',num2str(alpha1),num2str(alpha2),num2str(R));
+          end
           if exist(file1,'file')==0
-               ssM1 = parallelhygssi('RR',alpha1,alpha2,nWorker,nMatrices,R,pheno);
+               ssM1 = parallelhygssi('RR',marginal,alpha1,alpha2,nWorker,nMatrices,R,pheno);
           else
                load(file1); ssM1 = ssM; clear ssM
           end
 
-          file2 = sprintf('ssM_hygeSSI_alpha1%s_alpha2%s_DD_R%s.mat',num2str(alpha1),num2str(alpha2),num2str(R));
+          if marginal==1
+               file2 = sprintf('ssM_hygeSSI_alpha1%s_alpha2%s_DD_R%s.mat',num2str(alpha1),num2str(alpha2),num2str(R));
+          elseif marginal==0
+               file2 = sprintf('ssM_mhygeSSI_alpha1%s_alpha2%s_DD_R%s.mat',num2str(alpha1),num2str(alpha2),num2str(R));
+          end
+
           if exist(file2,'file')==0
-               ssM2 = parallelhygssi('DD',alpha1,alpha2,nWorker,nMatrices,R,pheno);
+               ssM2 = parallelhygssi('DD',marginal,alpha1,alpha2,nWorker,nMatrices,R,pheno);
           else
                load(file2); ssM2 = ssM; clear ssM
           end
 
-          file3 = sprintf('ssM_hygeSSI_alpha1%s_alpha2%s_RD_R%s.mat',num2str(alpha1),num2str(alpha2),num2str(R));
+          if marginal==1
+               file3 = sprintf('ssM_hygeSSI_alpha1%s_alpha2%s_RD_R%s.mat',num2str(alpha1),num2str(alpha2),num2str(R));
+          elseif marginal==0
+               file3 = sprintf('ssM_mhygeSSI_alpha1%s_alpha2%s_RD_R%s.mat',num2str(alpha1),num2str(alpha2),num2str(R));
+          end
           if exist(file3,'file')==0
-               ssM3 = parallelhygssi('RD',alpha1,alpha2,nWorker,nMatrices,R,pheno);              
+               ssM3 = parallelhygssi('RD',marginal,alpha1,alpha2,nWorker,nMatrices,R,pheno);              
           else
 		       load(file3); ssM3 = ssM; clear ssM
           end
@@ -199,14 +230,14 @@ end
 end
 
 
-function ssM = parforhygessi(datar,datad,i1,i2,j1,j2,pheno,alpha1,alpha2,N)
+function ssM = parforhygessi(datar,datad,i1,i2,j1,j2,pheno,marginal,alpha1,alpha2,N)
 
-% FUNCTION parforhygessi(datar,datad,i1,i2,j1,j2,pheno,alpha1,alpha2,N)
+% FUNCTION parforhygessi(datar,datad,i1,i2,j1,j2,pheno,marginal,alpha1,alpha2,N)
 %
 % PARFORHYGESSI use parallelized loops to compute pairwise interactions in sub-matrices
 
 parfor i=1:N
-	ssMtmp{i} = hygessiacross(datar(:,i1(i):i2(i)),datad(:,j1(i):j2(i)),pheno,alpha1,alpha2);
+	ssMtmp{i} = hygessiacross(datar(:,i1(i):i2(i)),datad(:,j1(i):j2(i)),pheno,marginal,alpha1,alpha2);
 end
 
 for i=1:N

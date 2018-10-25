@@ -1,11 +1,14 @@
+binary1 = 't50_b25';
+binary2 = 't25_b25';
+
 phenos = {'SC4NQO01ugml_38h','SCCHX05ugml_38h','SCpH3_38h','SCpH8_38h','YPD42_40h','YPDCHX05_40h','YPDSDS_40h','YPGLYCEROL_40h'};
 models = {'DD','RD','RR','combined'};
 
 j=1;
 for i=1:length(phenos)
      for k=1:length(models)
-          discoverydir = sprintf('/project/csbio/wwang/BridGE/project_yeast_%s_complex_t25_b50_mhygeSSI',phenos{i});
-          validationdir = sprintf('/project/csbio/wwang/BridGE/project_yeast_%s_complex_t50_b25_mhygeSSI',phenos{i});
+          discoverydir = sprintf('/project/csbio/wwang/BridGE/project_yeast_%s_complex_%s_mhygeSSI',phenos{i},binary1);
+          validationdir = sprintf('/project/csbio/wwang/BridGE/project_yeast_%s_complex_%s_mhygeSSI',phenos{i},binary2);
           resultfile = sprintf('results_ssM_hygeSSI_alpha10.05_alpha20.05_%s_R0.mat',models{k});
           [logp1, No_total1, No_discovery1, No_valid1, No_overlap1] = test_agreement_across_pathway_interaction(discoverydir,validationdir,resultfile,'snp_pathway_min5_max300.mat','BPMind.mat','top');
           [logp2, No_total2, No_discovery2, No_valid2, No_overlap2] = test_agreement_across_pathway_interaction(discoverydir,validationdir,resultfile,'snp_pathway_min5_max300.mat','BPMind.mat','fdr');
@@ -31,7 +34,7 @@ files = files';
 output_top = output_top';
 output_fdr = output_fdr';
 output = table(files,output_top,output_fdr);
-writetable(output,sprintf('%s/results_collection/yeast/yeast_coherence_top25_vs_top50.xls',getenv('BRIDGEPATH')))
+writetable(output,sprintf('%s/results_collection/yeast/yeast_coherence_%s_vs_%s.xls',getenv('BRIDGEPATH'),binary1,binary2))
 
 
 output_top_logp = zeros(1,length(output_top));
@@ -74,7 +77,7 @@ setfig
 xlabel('-log10 pv distribution (hypergeometric test)')
 ylabel('frequency')
 title('WPM')
-saveas(gcf,sprintf('%s/results_collection/yeast/yeast_coherence_top25_vs_top50.png',getenv('BRIDGEPATH')))
-saveas(gcf,sprintf('%s/results_collection/yeast/yeast_coherence_top25_vs_top50.pdf',getenv('BRIDGEPATH')))
+saveas(gcf,sprintf('%s/results_collection/yeast/yeast_coherence_%s_vs_%s.png',getenv('BRIDGEPATH'),binary1,binary2))
+saveas(gcf,sprintf('%s/results_collection/yeast/yeast_coherence_%s_vs_%s.pdf',getenv('BRIDGEPATH'),binary1,binary2))
 
 

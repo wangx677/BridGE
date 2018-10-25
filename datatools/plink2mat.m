@@ -39,7 +39,11 @@ tmppid = data(:,2);
 tmppid = tmppid(2:end);
 
 tmppheno = data(:,6);
-tmppheno = str2num(cell2mat(tmppheno(2:end)));
+try
+     tmppheno = str2num(cell2mat(tmppheno(2:end)));
+catch
+     tmppheno = cellfun(@(x)str2num(x),tmppheno(2:end));
+end
 
 tmpgender = data(:,5);
 tmpgender = str2num(cell2mat(tmpgender(2:end)));
@@ -64,7 +68,7 @@ data = trans_data;
 clear trans_data
 
 [chr rsid tmp1 loc tmp2 tmp3] = textread(plinkBimFile,'%d%s%s%d%s%s');
-[fid pid tmp1 tmp2 gender pheno] = textread(plinkFamFile,'%s%s%s%s%d%d');
+[fid pid tmp1 tmp2 gender pheno] = textread(plinkFamFile,'%s%s%s%s%d%f');
 
 if isequal(tmprsid,rsid)~=1
      sprintf('rsid of plinkBimFile and matlab file does not match, please check!')

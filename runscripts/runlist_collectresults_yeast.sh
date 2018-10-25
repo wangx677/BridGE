@@ -3,7 +3,7 @@
 pheno=$1
 
 ## yeast
-interaction=hygeSSI
+BPMindFile='BPMind.mat'
 pvalueCutoff=0.05
 minPath=5
 samplePerms=10
@@ -16,30 +16,51 @@ snpGeneMappingFile=snpgenemapping_500bp.mat
 cd /project/csbio/wwang/BridGE/project_yeast_${pheno}_complex_t25_b50_mhygeSSI
 for model in RR DD RD combined
 do
-#     nice matlab -nodisplay -nodesktop -nosplash -r "fdrsampleperm('${model}','${interaction}',${pvalueCutoff},${minPath},${samplePerms});exit" </dev/null> /dev/null &&
+     ssmFile=ssM_hygeSSI_alpha10.05_alpha20.05_${model}
+     nice matlab -nodisplay -nodesktop -nosplash -r "fdrsampleperm('${ssmFile}','${BPMindFile}',${pvalueCutoff},${minPath},${samplePerms});exit" </dev/null> /dev/null &&
      run_collectresults.sh --projectDir=project_yeast_${pheno}_complex_t25_b50_mhygeSSI --model=${model} --fdrcut=0.4 --snpPathwayFile=${snpPathwayFile} --snpGeneMappingFile=${snpGeneMappingFile} &
-done
-
-cd /project/csbio/wwang/BridGE/project_yeast_${pheno}_GI_t25_b50_mhygeSSI 
-for model in RR DD RD combined
-do
-#     nice matlab -nodisplay -nodesktop -nosplash -r "fdrsampleperm('${model}','${interaction}',${pvalueCutoff},${minPath},${samplePerms});exit" </dev/null> /dev/null &&
-     run_collectresults.sh --projectDir=project_yeast_${pheno}_GI_t25_b50_mhygeSSI --model=${model} --fdrcut=0.4 --snpPathwayFile=${snpPathwayFile} --snpGeneMappingFile=${snpGeneMappingFile} &
 done
 
 cd /project/csbio/wwang/BridGE/project_yeast_${pheno}_complex_t50_b25_mhygeSSI 
 for model in RR DD RD combined
 do
-#     nice matlab -nodisplay -nodesktop -nosplash -r "fdrsampleperm('${model}','${interaction}',${pvalueCutoff},${minPath},${samplePerms});exit" </dev/null> /dev/null &&
+     ssmFile=ssM_hygeSSI_alpha10.05_alpha20.05_${model}
+     nice matlab -nodisplay -nodesktop -nosplash -r "fdrsampleperm('${ssmFile}','${BPMindFile}',${pvalueCutoff},${minPath},${samplePerms});exit" </dev/null> /dev/null &&
      run_collectresults.sh --projectDir=project_yeast_${pheno}_complex_t50_b25_mhygeSSI --model=${model} --fdrcut=0.4 --snpPathwayFile=${snpPathwayFile} --snpGeneMappingFile=${snpGeneMappingFile} &
 done
 
-cd /project/csbio/wwang/BridGE/project_yeast_${pheno}_GI_t50_b25_mhygeSSI 
+cd /project/csbio/wwang/BridGE/project_yeast_${pheno}_complex_t25_b25_mhygeSSI
 for model in RR DD RD combined
 do
-#     nice matlab -nodisplay -nodesktop -nosplash -r "fdrsampleperm('${model}','${interaction}',${pvalueCutoff},${minPath},${samplePerms});exit" </dev/null> /dev/null &&
-     run_collectresults.sh --projectDir=project_yeast_${pheno}_GI_t50_b25_mhygeSSI --model=${model} --fdrcut=0.4 --snpPathwayFile=${snpPathwayFile} --snpGeneMappingFile=${snpGeneMappingFile} &
-done 
+     ssmFile=ssM_hygeSSI_alpha10.05_alpha20.05_${model}
+     nice matlab -nodisplay -nodesktop -nosplash -r "fdrsampleperm('${ssmFile}','${BPMindFile}',${pvalueCutoff},${minPath},${samplePerms});exit" </dev/null> /dev/null &&
+     run_collectresults.sh --projectDir=project_yeast_${pheno}_complex_t50_b25_mhygeSSI --model=${model} --fdrcut=0.4 --snpPathwayFile=${snpPathwayFile} --snpGeneMappingFile=${snpGeneMappingFile} &
+done
+
+
+cd /project/csbio/wwang/BridGE/project_yeast_${pheno}_complex_t25_b50_mhygeSSI_WCRandom
+for model in RR DD RD combined
+do
+     ssmFile=ssM_hygeSSI_alpha10.05_alpha20.05_${model}
+     nice matlab -nodisplay -nodesktop -nosplash -r "fdrsampleperm('${ssmFile}','${BPMindFile}',${pvalueCutoff},${minPath},${samplePerms});exit" </dev/null> /dev/null &&
+     run_collectresults.sh --projectDir=project_yeast_${pheno}_complex_t25_b50_mhygeSSI --model=${model} --fdrcut=0.4 --snpPathwayFile=${snpPathwayFile} --snpGeneMappingFile=${snpGeneMappingFile} &
+done
+
+cd /project/csbio/wwang/BridGE/project_yeast_${pheno}_complex_t50_b25_mhygeSSI_WCRandom
+for model in RR DD RD combined
+do
+     ssmFile=ssM_hygeSSI_alpha10.05_alpha20.05_${model}
+     nice matlab -nodisplay -nodesktop -nosplash -r "fdrsampleperm('${ssmFile}','${BPMindFile}',${pvalueCutoff},${minPath},${samplePerms});exit" </dev/null> /dev/null &&
+     run_collectresults.sh --projectDir=project_yeast_${pheno}_complex_t50_b25_mhygeSSI --model=${model} --fdrcut=0.4 --snpPathwayFile=${snpPathwayFile} --snpGeneMappingFile=${snpGeneMappingFile} &
+done
+
+cd /project/csbio/wwang/BridGE/project_yeast_${pheno}_complex_t25_b25_mhygeSSI_WCRandom
+for model in RR DD RD combined
+do
+     ssmFile=ssM_hygeSSI_alpha10.05_alpha20.05_${model}
+     nice matlab -nodisplay -nodesktop -nosplash -r "fdrsampleperm('${ssmFile}','${BPMindFile}',${pvalueCutoff},${minPath},${samplePerms});exit" </dev/null> /dev/null &&
+     run_collectresults.sh --projectDir=project_yeast_${pheno}_complex_t50_b25_mhygeSSI --model=${model} --fdrcut=0.4 --snpPathwayFile=${snpPathwayFile} --snpGeneMappingFile=${snpGeneMappingFile} &
+done
 
 cd /project/csbio/wwang/BridGE
 #done

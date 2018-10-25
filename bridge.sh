@@ -142,6 +142,11 @@ COMPUTE INTERACTION INPUTS:
 	Default is combined.
 	This input is not required when "--job=DataProcess"
 
+  --marginal==MARGINAL
+     marginal=0: impact of joint mutation doesn't need to be greater than single SNPs
+     marginal=1: impact of joint mutation need to be greater than single SNPs
+     Default is 0.
+
   --alpha1=ALPHA1
      Marginal significance level for joint effect.
      Defalut is 0.05.
@@ -230,6 +235,7 @@ do
      --samplePerms=*) samplePerms=${argument/*=/""} ;;
      --plinkCluster2=*) plinkCluster2=${argument/*=/""} ;;
      --model=*) model=${argument/*=/""} ;;
+     --marginal=*) marginal=${argument/*=/""} ;;
      --alpha1=*) alpha1=${argument/*=/""} ;;
      --alpha2=*) alpha2=${argument/*=/""} ;;
      --binaryNetwork=*) binaryNetwork=${argument/*=/""} ;;
@@ -271,6 +277,7 @@ if [ -z "${maxPath}" ]; then maxPath=300; fi
 if [ -z "${snpPerms}" ]; then snpPerms=10000; fi
 if [ -z "${samplePerms}" ]; then samplePerms=10; fi
 if [ -z "${plinkCluster2}" ]; then plinkCluster2=plinkFile.cluster2; fi
+if [ -z "${marginal}" ]; then marginal=0; fi
 if [ -z "${alpha1}" ]; then alpha1=0.05; fi
 if [ -z "${alpha2}" ]; then alpha2=0.05; fi
 if [ -z "${fdrCutoff}" ]; then fdrCutoff=0.4; fi
@@ -335,12 +342,12 @@ ComputeInteraction)
 
      printf "BridGE is computing SNP-SNP interaction with the followng parameters...\n"
      printf "bridge.sh --job=ComputeInteraction --projectDir=${projectDir} --interaction=${interaction} \n"
-     printf "          --model=${model} --alpha1=${alpha1} --alpha2=${alpha1} --plinkCluster2=${plinkCluster2} \n"
+     printf "          --model=${model} --margnal=${marginal} --alpha1=${alpha1} --alpha2=${alpha1} --plinkCluster2=${plinkCluster2} \n"
      printf "          --samplePerms=${samplePerms} --nWorker=${nWorker}\n\n"
      
      for R in `seq 0 ${samplePerms}`
      do
-          nice matlab -nodisplay -nodesktop -nosplash -r "computessi('${model}',${alpha1},${alpha1},'plinkFile.cluster2',${nWorker},${R});exit" </dev/null> /dev/null
+          nice matlab -nodisplay -nodesktop -nosplash -r "computessi('${model}',${marginal},${alpha1},${alpha1},'plinkFile.cluster2',${nWorker},${R});exit" </dev/null> /dev/null
      done
 
      printf "Computing SNP-SNP interaction is complete!\n"
@@ -363,17 +370,17 @@ SamplePermutation)
           ssmFile=ssM_lr_cassi_pv0.05
      fi
 
-     bpmindFile='BPMind.mat'
+     if [ -z "${bpmindFile}" ]; then bpmindFile='BPMind.mat'; fi
 
      printf "BridGE is running sample permutaion with the followng parameters...\n"
-     printf "bridge.sh --job=SamplePermutation --projectDir=${projectDir} --interaction=${interaction} --model=${model} \n"
+     printf "bridge.sh --job=SamplePermutation --projectDir=${projectDir} --interaction=${interaction} --model=${model} --marginal=${marginal} \n"
      printf "          --binaryNetwork=${binaryNetwork} --alpha1=${alpha1} --alpha2=${alpha1} --plinkCluster2=${plinkCluster2} \n"
      printf "          --samplePerms=${samplePerms} --snpPerms=${snpPerms} --minPath=${minPath} --nWorker=${nWorker}\n\n"
 
      for R in `seq 0 ${samplePerms}`
      do
           printf "computing SNP-SNP interaction for run #${R} ...\n\n"
-          nice matlab -nodisplay -nodesktop -nosplash -r "computessi('${model}',${alpha1},${alpha2},'${plinkCluster2}',${nWorker},${R});exit" </dev/null> /dev/null
+          nice matlab -nodisplay -nodesktop -nosplash -r "computessi('${model}',${marginal},${alpha1},${alpha2},'${plinkCluster2}',${nWorker},${R});exit" </dev/null> /dev/null
 
           printf "calling SNP permutation for sample permutation run #${R} ...\n\n"
           nice matlab -nodisplay -nodesktop -nosplash -r "genstats('${ssmFile}_R${R}','${bpmindFile}',${binaryNetwork},${snpPerms},${minPath});exit" </dev/null> /dev/null
@@ -404,11 +411,13 @@ Analysis)
      printf "          --model=${model}  --samplePerms=${samplePerms} --snpPerms=${snpPerms} --validationDir=${validationDir} \n"
      printf "          --fdrCutoff=${fdrCutoff} --pvalueCutoff=${pvalueCutoff} --minPath=${minPath} --snpGeneMappingFile=${snpGeneMappingFile} \n"     
      printf "          --snpPathwayFile=${snpPathwayFile} \n"
+
+     if [ -z "${bpmindFile}" ]; then bpmindFile='BPMind.mat'; fi
  
      # compute false discovery rate based on sample permutation
      # output file is results_<ssmFile>_R0.mat
      printf "computing false discovery rate ...\n\n"
-     nice matlab -nodisplay -nodesktop -nosplash -r "fdrsampleperm('${model}','${interaction}',${pvalueCutoff},${minPath},${samplePerms});exit" </dev/null> /dev/null
+     nice matlab -nodisplay -nodesktop -nosplash -r "fdrsampleperm('${ssmFile}','${bpmindFile}',${pvalueCutoff},${minPath},${samplePerms});exit" </dev/null> /dev/null
 
      # write signficant results to excel file
      # excel file is named "output_results_<ssmFile>_R0.xls"

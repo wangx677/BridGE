@@ -1,0 +1,4 @@
+#!/bin/sh
+
+PPIE_JAR_DIR=.
+java -classpath  "$PPIE_JAR_DIR/PPIE.jar"  PPIE.PPIExtend $@
