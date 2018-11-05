@@ -204,6 +204,7 @@ for tt=1:2
      ssM11{tt}(isinf(ssM11{tt})) = 16;
      ssM10{tt}(isinf(ssM10{tt})) = 16;
      ssM01{tt}(isinf(ssM01{tt})) = 16;
+     hyge1{tt}(isinf(hyge1{tt})) = 16;
      
      if marginal==0
           ssM{tt} = (ssM11{tt}-max(ssM00{tt},max(ssM01{tt},ssM10{tt}))).*pair2keep{tt};

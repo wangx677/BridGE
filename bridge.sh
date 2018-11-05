@@ -423,7 +423,7 @@ Analysis)
      # excel file is named "output_results_<ssmFile>_R0.xls"
      # there is also a corresponding mat-file.
      printf "getting detailed information for significant discoveries and writing to excel ...\n\n"
-     run_collectresults.sh --projectDir=${projectDir} --interaction=${interaction} --model=${model} --validationDir=${validationDir} \
+     run_collectresults.sh --projectDir=${projectDir} --ssmFile=${ssmFile} --interaction=${interaction} --model=${model} --validationDir=${validationDir} \
                --fdrCutoff=${fdrCutoff} --snpPathwayFile=${snpPathwayFile} --snpGeneMappingFile=${snpGeneMappingFile}
      
      printf "Post analysis is complete!\n"

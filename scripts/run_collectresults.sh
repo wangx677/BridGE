@@ -99,7 +99,8 @@ if [ -z "${ssmFile}" ]; then
           ssmFile=ssM_lr_cassi_pv0.05_R0.mat
      fi
 else
-     resultfile=results_${ssmFile}
+     resultfile=results_${ssmFile}_R0.mat
+     ssmFile=${ssmFile}_R0.mat
 fi
 
 

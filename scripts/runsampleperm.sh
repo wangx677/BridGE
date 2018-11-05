@@ -87,16 +87,18 @@ if [ -z "${alpha2}" ]; then alpha2=0.05; fi
 
 cd ${projectDir}
 
-if [ "${model}" = "RR" ]; then
-     ssmFile=ssM_hygeSSI_alpha1${alpha1}_alpha2${alpha2}_RR
-elif [ "${model}" = "DD" ]; then
-     ssmFile=ssM_hygeSSI_alpha1${alpha1}_alpha2${alpha2}_DD
-elif [ "${model}" = "RD" ]; then
-     ssmFile=ssM_hygeSSI_alpha1${alpha1}_alpha2${alpha2}_RD
-elif [ "${model}" = "combined" ]; then
-     ssmFile=ssM_hygeSSI_alpha1${alpha1}_alpha2${alpha2}_combined
-elif [ "${model}" = "AA" ]; then
-     ssmFile=ssM_lr_cassi_pv0.05
-fi
+if [ -z "${ssmFile}" ]; the
+     if [ "${model}" = "RR" ]; then
+          ssmFile=ssM_hygeSSI_alpha1${alpha1}_alpha2${alpha2}_RR
+     elif [ "${model}" = "DD" ]; then
+          ssmFile=ssM_hygeSSI_alpha1${alpha1}_alpha2${alpha2}_DD
+     elif [ "${model}" = "RD" ]; then
+          ssmFile=ssM_hygeSSI_alpha1${alpha1}_alpha2${alpha2}_RD
+     elif [ "${model}" = "combined" ]; then
+          ssmFile=ssM_hygeSSI_alpha1${alpha1}_alpha2${alpha2}_combined
+     elif [ "${model}" = "AA" ]; then
+          ssmFile=ssM_lr_cassi_pv0.05
+     fi
+end
 
 nice matlab -nodisplay -nodesktop -nosplash -r "genstats('${ssmFile}_R${randRun}','BPMind.mat',${binaryNetwork},${snpPerms},${minPath});exit" </dev/null> /dev/null
