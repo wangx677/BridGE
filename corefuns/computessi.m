@@ -20,16 +20,6 @@ function computessi(model,marginal,alpha1,alpha2,plinkCluster2,nWorker,R)
 %  A mat-file include a matrix vector (size of 2) ssM. It's named based on given disease model. 
 % 
 
-% if sample permutation file doesn't exist
-% create parallel pool
-pr = gcp('nocreate');
-if isempty(pr)==1
-     parpool(nWorker)
-     pr = 0;
-else
-     pr = 1;
-end
-
 if strcmp(model,'RR')
      if marginal==1
           ssmFile = sprintf('ssM_hygeSSI_alpha1%s_alpha2%s_RR',num2str(alpha1),num2str(alpha2));
@@ -67,6 +57,15 @@ end
 
 % if ssmFileNew file doesn't exist
 kk=10; %define how to partition the data to invoke parallelized hygeSSI
+
+% create parallel pool
+pr = gcp('nocreate');
+if isempty(pr)==1
+     parpool(nWorker)
+     pr = 0;
+else
+     pr = 1;
+end
 
 if R==0
      if strcmp(model,'AA')~=1

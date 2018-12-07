@@ -1,11 +1,11 @@
-function summary(bridgePATH,dirlist,outputfile)
+function summary(bridgePATH,dirlist,GI,outputfile)
 
 N = length(dirlist);
 output = [];
 
 for i=1:N
 
-     pattern = fullfile(sprintf('%s/%s',bridgePATH,dirlist{i}), 'result*.mat');
+     pattern = fullfile(sprintf('%s/%s',bridgePATH,dirlist{i}), sprintf('result*_%s*.mat',GI));
      files = dir(pattern);
 
      for k = 1:length(files)

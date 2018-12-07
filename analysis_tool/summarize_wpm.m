@@ -1,7 +1,7 @@
-function [subject_BPM subject_BPM_protective subject_BPM_risk summary] = summarize_bpm(ssmFile,BPMindfile,resultFile,diseasemodel,snppathwayfile,fdrcutoff,pcutoff,netcut,outputfile)
+function [subject_WPM subject_WPM_protective subject_WPM_risk summary] = summarize_wpm(ssmFile,BPMindfile,resultFile,diseasemodel,snppathwayfile,fdrcutoff,pcutoff,netcut,outputfile)
 
-%% construct subjectxBPM matrix (discovery data and validation data(real and 100 random))
-%% 1) subject x snp_pair (show interaction in the BPM) matrix : binary
+%% construct subjectxWPM matrix (discovery data and validation data(real and 100 random))
+%% 1) subject x snp_pair (show interaction in the WPM) matrix : binary
 %% 2) summarize 1) by sum
 
 load(resultFile)
@@ -17,11 +17,12 @@ trans_data_AD = SNPdata.data;
 
 pheno = SNPdata.pheno;
 
-ind = find(fdrBPM2<=fdrcutoff & bpm_pv<=pcutoff);
-path1 = snpset.pathwaynames([BPM.path1idx BPM.path1idx]);
-path2 = snpset.pathwaynames([BPM.path2idx BPM.path2idx]);;
+ind = find(fdrWPM2<=fdrcutoff & wpm_pv<=pcutoff);
+path1 = reshape(WPM.pathway,1,length(WPM.pathway));
+path1 = [path1 path1];
+path2 = path1;
 
-subject_BPM = [];
+subject_WPM = [];
 
 for i=1:2
 	ssM{i} = squareform(ssM{i});
@@ -48,9 +49,12 @@ for k = 1:length(ind)
 		RorP{k} = 'risk';
 	end
 
-	   ind1 = BPM.ind1{indtmp};
-        ind2 = BPM.ind2{indtmp};
-        [m n] = find(ssM{tt}(ind1,ind2)>=netcut);
+	   ind1 = WPM.ind{indtmp};
+        ind2 = WPM.ind{indtmp};
+        
+        % for WPM, ssM{tt}(ind1,ind2) is symmetric  
+        tmp = tril(ssM{tt}(ind1,ind2),-1);
+        [m n] = find(tmp>=netcut);
 
         ind1 = ind1(m);
         ind2 = ind2(n);
@@ -90,7 +94,7 @@ for k = 1:length(ind)
 	end
      
 	output = sum(output,2);
-	subject_BPM = [subject_BPM output];
+	subject_WPM = [subject_WPM output];
 	cases(k) = nnz(output(pheno==1)>=mean(output));
 	controls(k) = nnz(output(pheno==0)>=mean(output));
 	if tt==1
@@ -108,38 +112,37 @@ for k = 1:length(ind)
 	oddsratio(k) = (a/c)/(b/d);
 
 end
-path1 = reshape(path1(ind),length(ind),1);
-path2 = reshape(path2(ind),length(ind),1);
-FDR = reshape(fdrBPM2(ind),length(ind),1);
-permP = reshape(bpm_pv(ind),length(ind),1);
+path = reshape(path1(ind),length(ind),1);
+FDR = reshape(fdrWPM2(ind),length(ind),1);
+permP = reshape(wpm_pv(ind),length(ind),1);
 cases = reshape(cases,length(ind),1)/nnz(pheno==1);
 controls = reshape(controls,length(ind),1)/nnz(pheno==0);
 oddsratio = reshape(oddsratio,length(ind),1);
 RorP = reshape(RorP,length(ind),1);
-summary = table(path1, path2, FDR, permP, RorP, cases, controls, oddsratio);
+summary = table(path, FDR, permP, RorP, cases, controls, oddsratio);
 [tmp1 tmp2] = sort(permP,'ascend');
 summary = summary(tmp2,:);
 
 
 pheno = SNPdata.pheno;
 pheno = table(pheno);
-subject_BPM = array2table(subject_BPM);
-subject_BPM.Properties.VariableNames = arrayfun(@(x)sprintf('BPM%s',num2str(x)),1:length(ind),'uniform',0);
+subject_WPM = array2table(subject_WPM);
+subject_WPM.Properties.VariableNames = arrayfun(@(x)sprintf('WPM%s',num2str(x)),1:length(ind),'uniform',0);
 
-subject_BPM_protective = subject_BPM(:,find(ismember(RorP,'protective')));
-subject_BPM_risk = subject_BPM(:,find(ismember(RorP,'risk')));
+subject_WPM_protective = subject_WPM(:,find(ismember(RorP,'protective')));
+subject_WPM_risk = subject_WPM(:,find(ismember(RorP,'risk')));
 
-subject_BPM = [pheno subject_BPM];
-subject_BPM_protective = [pheno subject_BPM_protective];
-subject_BPM_risk = [pheno subject_BPM_risk];
+subject_WPM = [pheno subject_WPM];
+subject_WPM_protective = [pheno subject_WPM_protective];
+subject_WPM_risk = [pheno subject_WPM_risk];
 
 if exist('outputfile','var')
-     save(outputfile,'subject_BPM','summary')
+     save(outputfile,'subject_WPM','summary')
 end
 
 else
-     subject_BPM_protective = [];
-     subject_BPM_risk = [];
-     subject_BPM = [];
+     subject_WPM_protective = [];
+     subject_WPM_risk = [];
+     subject_WPM = [];
      summary = [];
 end

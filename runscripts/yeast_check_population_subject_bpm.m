@@ -16,12 +16,13 @@ for i=1:length(SNPdata.fid)
 end
 yeast = yeast';
 yeast = table(yeast);
+netcut = 1; % only use hygeSSI>1
 
 for i = 1:length(diseasemodel)
      ssmFile = sprintf('ssM_hygeSSI_alpha10.05_alpha20.05_%s_R0.mat',diseasemodel{i});
      delete(sprintf('subject_BPM_%s.xls',ssmFile))
      resultFile = sprintf('results_ssM_hygeSSI_alpha10.05_alpha20.05_%s_R0.mat',diseasemodel{i});
-     [subject_BPM subject_BPM_protective subject_BPM_risk summary] = summarize_bpm(ssmFile,BPMindfile,resultFile,diseasemodel{i},snppathwayfile,fdrcutoff,pcutoff);
+     [subject_BPM subject_BPM_protective subject_BPM_risk summary] = summarize_bpm(ssmFile,BPMindfile,resultFile,diseasemodel{i},snppathwayfile,fdrcutoff,pcutoff,netcut);
 
      if isempty(subject_BPM_protective)==0
           bpm_number = sum(table2array(subject_BPM_protective(:,2:end))>0,2);

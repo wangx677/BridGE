@@ -1,4 +1,4 @@
-%function plot_BPM_combined(pathname1,pathname2,model,riskornot,outputname,snppathwayfile,BPMindfile,denscut)
+function plot_BPM_combined(pathname1,pathname2,model,riskornot,outputname,snppathwayfile,BPMindfile,denscut)
 
 % pathname1='GPI-anchor transamidase complex';
 % pathname2='nuclear pore';
@@ -150,7 +150,7 @@ hyge_ind1(hyge_ind1<=0.01) = 0.01;
 hyge_ind2(hyge_ind2<=0.01) = 0.01; 
 
 rgb22={'Violet','Turquoise','YellowGreen','Khaki','Salmon','HotPink','Goldenrod',...
-    'SteelBlue','LightSeaGreen','Peru','IndianRed','LightSlateGray','DarkOrd','CadetBlue',...
+    'SteelBlue','LightSeaGreen','Peru','IndianRed','LightSlateGray','DarkOrchid','CadetBlue',...
     'SeaGreen','Moccasin','DimGray','MediumPurple','DodgerBlue','DarkKhaki','RosyBrown','Darkolivegreen'};
 
 
@@ -173,7 +173,8 @@ hdl = plot(tmp','LineWidth',1);
 %set(lh,'linewidth',4);
 delete(hdl)
 
-p1=0;p2=2;
+%p1 = 0;p2 = 2;
+p1 = 0;p2 = 1;
 
 idx1 = find(sum(MM,2)~=0);
 idx2 = find(sum(MM,1)~=0);
@@ -220,7 +221,7 @@ else
      line([p1*ones(size(ii))'+0.04;p2*ones(size(jj))'-0.04],[ii'+bb;jj'],'Color',[0.75,0.75,0.75],'LineStyle','-','LineWidth',0.25);	
 end
 
-s1 = 2+(-log10(0.05))/2;
+s1 = p2+(-log10(0.05))/2;
 s2 = -(-log10(0.05))/2;
 line([s2 s2],[0 length(idx2)+1],'LineStyle','--','Color', [0.5 0.5 0.5])
 line([s1 s1],[0 length(idx2)+1],'LIneStyle','--','COlor',[0.5,0.5,0.5])
@@ -238,7 +239,7 @@ set(ax1,'Ycolor','w')
 set(ax1,'tickdir','out')
 % set(ax1,'Xtick',[-1.5:0.5:3.5],'XtickLabel',{'2.5','2','1','0','','','','0','1','2','2.5'})
 xt = [round(-max(hyge_ind1(ii)))*100/100+1:0.5:round(max(hyge_ind2(jj)))*100/100+1];
-xl = arrayfun(@(x)num2str(abs(x)),round(-max(hyge_ind1(ii)))*100/100:0.5:round(max(hyge_ind2(jj)))*100/100,'Uniform',0);
+xl = arrayfun(@(x)num2str(2*abs(x)),round(-max(hyge_ind1(ii)))*100/100:0.5:round(max(hyge_ind2(jj)))*100/100,'Uniform',0);
 set(ax1,'Xtick',xt,'XtickLabel',xl)
 
 set(gca,'YTick',[])
