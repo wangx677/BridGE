@@ -87,7 +87,7 @@ if [ -z "${alpha2}" ]; then alpha2=0.05; fi
 
 cd ${projectDir}
 
-if [ -z "${ssmFile}" ]; the
+if [ -z "${ssmFile}" ]; then
      if [ "${model}" = "RR" ]; then
           ssmFile=ssM_hygeSSI_alpha1${alpha1}_alpha2${alpha2}_RR
      elif [ "${model}" = "DD" ]; then
