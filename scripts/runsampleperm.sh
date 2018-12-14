@@ -99,6 +99,6 @@ if [ -z "${ssmFile}" ]; the
      elif [ "${model}" = "AA" ]; then
           ssmFile=ssM_lr_cassi_pv0.05
      fi
-end
+fi
 
 nice matlab -nodisplay -nodesktop -nosplash -r "genstats('${ssmFile}_R${randRun}','BPMind.mat',${binaryNetwork},${snpPerms},${minPath});exit" </dev/null> /dev/null

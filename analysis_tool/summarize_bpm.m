@@ -18,9 +18,15 @@ trans_data_AD = SNPdata.data;
 pheno = SNPdata.pheno;
 
 ind = find(fdrBPM2<=fdrcutoff & bpm_pv<=pcutoff);
-path1 = snpset.pathwaynames([BPM.path1idx BPM.path1idx]);
-path2 = snpset.pathwaynames([BPM.path2idx BPM.path2idx]);;
-
+if isfield(BPM,'path1idx')==1
+     path1 = snpset.pathwaynames([BPM.path1idx BPM.path1idx]);
+     path2 = snpset.pathwaynames([BPM.path2idx BPM.path2idx]);;
+else
+     path1 = reshape(BPM.path1,1,length(BPM.path1));
+     path2 = reshape(BPM.path2,1,length(BPM.path2));
+     path1 = [path1 path1];
+     path2 = [path2 path2];
+end
 subject_BPM = [];
 
 for i=1:2
