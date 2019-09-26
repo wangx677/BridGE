@@ -18,7 +18,7 @@ gene_ind = find(ismember(snp2gene.genelist,genes));
 gene_ind = find(sum(snp2gene.sgmatrix(:,gene_ind),2)~=0);
 
 load SNPdataAR.mat
-targt_snps = SNPdata.rsid(gene_ind);
+target_snps = SNPdata.rsid(gene_ind);
 
 % check each SNP's interaction with the input genes to see if they're more than expected
 % using ranksum test
@@ -52,7 +52,9 @@ for tt=1:2
      snp_gi_enrich_ranksum{tt} = -log10(snp_gi_enrich_ranksum{tt});
 end
 
-% get a set of candiate SNPs with signficance
+% compute FDR based on hypergeometric and ranksum test
+
+
  
 outputFile = sprintf('geneset_of_interest_%s_%s.mat',outputname,ssmFile);
 save(outputFile,'snp_gi_enrich*','genes','-v7.3')

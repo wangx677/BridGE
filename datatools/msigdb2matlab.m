@@ -6,7 +6,7 @@ function msigdb2matlab(symbolsFile,entrezFile)
 %
 % INPUTS:
 %   symbolsFile: MsigDB gene set file using gene symbols (.symbols.gmt).
-%   entrezFile: MsigDB gene set file using gene entrez ids (.symbols.gmt).
+%   entrezFile: MsigDB gene set file using gene entrez ids (.entrez.gmt).
 %
 % OUTPUTS:
 %   <symbolsFile>.mat -This mat-file includes a strucutre array with
@@ -16,46 +16,35 @@ function msigdb2matlab(symbolsFile,entrezFile)
 %      geneset.entrezids - gene entrez ids
 %      geneset.gpmatrix - gene pathway binary matrix
 
-% rename files to csv
-symbolsFile = strsplit(symbolsFile,'.gmt');
-symbolsFile = symbolsFile{1};
-system(sprintf('cp %s.gmt %s.csv',symbolsFile,symbolsFile));
+% read data files
+symbolsData = readtable(symbolsFile,'FileType','text','ReadVariableNames',0,'dilimiter','\t');
 
-entrezFile = strsplit(entrezFile,'.gmt');
-entrezFile = entrezFile{1};
-system(sprintf('cp %s.gmt %s.csv',entrezFile,entrezFile));
+entrezData = readtable(entrezFile,'FileType','text','ReadVariableNames',0,'dilimiter','\t');
 
 % output file name
-outputFile = strsplit(symbolsFile,'.symbols');
+outputFile = strsplit(symbolsFile,'.symbols.gmt');
 outputFile = sprintf('%s.mat',outputFile{1});
-
-% read data files
-symbolsData = readtable(sprintf('%s.csv',symbolsFile),'headerlines',0);
-delete(sprintf('%s.csv',symbolsFile));
-
-entrezData = readtable(sprintf('%s.csv',entrezFile),'headerlines',0);
-delete(sprintf('%s.csv',entrezFile));
-
-% only need Var7 from the data
-symbolsData = symbolsData.Var7;
-entrezData = entrezData.Var7;
 
 % get unique gene symbols and corresponding entrez ids
 tmpsymbols = [];
 tmpentrez = [];
-for i=1:length(symbolsData)
-     tmp1 = strsplit(symbolsData{i});
-     tmp2 = strsplit(entrezData{i});
+for i=1:size(symbolsData,1)
+     tmp1 = table2array(symbolsData(i,:));
+     tmp2 = arrayfun(@(x)num2str(x),table2array(entrezData(i,3:end)),'uniform',0);
      pathwaynames{i} = tmp1{1};
 
-     symbols{i} = tmp1(2:end);
-     entrez{i} = tmp2(2:end);
+     symbols{i} = tmp1(3:end);
+     entrez{i} = tmp2;
      tmpsymbols = [tmpsymbols symbols{i}];
      tmpentrez = [tmpentrez entrez{i}];
 end
 
 [genenames ia ic] = unique(tmpsymbols);
 entrezids = tmpentrez(ia);
+
+% remove the empty string
+genenames = genenames(2:end);
+entrezids = entrezids(2:end);
 
 % binary matrix for gene and pathway association
 gpmatrix = zeros(length(genenames),length(pathwaynames));

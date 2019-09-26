@@ -11,8 +11,11 @@ $*
 
  INPUTS:
   --projectDir=PROJECTDIR
-     Projectdir is the data directory where results will also be stored at.
+     projectDir is the data directory where results will also be stored at.
      Default is the current directory.
+
+  --ssmFile=SSMFILE
+    ssmFile is the SNP-SNP interaction file. 
 
   --model=MODEL
      Prefered interaction model which can be chosen from:
@@ -65,6 +68,7 @@ for argument in $options
 do
      case $argument in
      --projectDir=*) projectDir=${argument/*=/""} ;;
+     --ssmFile=*) ssmFile=${argument/*=/""} ;;
      --model=*) model=${argument/*=/""} ;;
      --minPath=*) minPath=${argument/*=/""} ;;
      --snpPerms=*) snpPerms=${argument/*=/""} ;;

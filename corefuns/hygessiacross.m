@@ -83,16 +83,20 @@ indtmp = find(a+b>0);
 % mutations with protecitve effect
 % create a three column matrix: number of selected samples, total number of 
 % infected samples, number of infected samples in selected samples 
-test = [ones(length(indtmp),1)*length(x), a(indtmp)'+b(indtmp)',a(indtmp)'];
-% find the index of these combinations in the dictionay table
-[tmp ind]=ismember(test,HygeTable(:,1:3),'rows');
-% assign the hypergeometric stats to given data
-hyge1ProtectiveRecessive(indtmp) = HygeTable(ind,4);
+if length(indtmp)>0
+     test = [ones(length(indtmp),1)*length(x), a(indtmp)'+b(indtmp)',a(indtmp)'];
+     % find the index of these combinations in the dictionay table
+     [tmp ind]=ismember(test,HygeTable(:,1:3),'rows');
+     % assign the hypergeometric stats to given data
+     hyge1ProtectiveRecessive(indtmp) = HygeTable(ind,4);
+end
 
 % mutations with risk effect, 
-test = [ones(length(indtmp),1)*length(y), a(indtmp)'+b(indtmp)',b(indtmp)'];
-[tmp ind]=ismember(test,HygeTable(:,1:3),'rows');
-hyge1RiskRecessive(indtmp) = HygeTable(ind,4);
+if length(indtmp)>0
+     test = [ones(length(indtmp),1)*length(y), a(indtmp)'+b(indtmp)',b(indtmp)'];
+     [tmp ind]=ismember(test,HygeTable(:,1:3),'rows');
+     hyge1RiskRecessive(indtmp) = HygeTable(ind,4);
+end
 
 % dominant disease model 
 hyge1ProtectiveDominant = zeros(1,q);
@@ -103,13 +107,17 @@ b = sum(datad1(y,:));
 
 indtmp = find(a+b>0);
 
-test = [ones(length(indtmp),1)*length(x), a(indtmp)'+b(indtmp)',a(indtmp)'];
-[tmp ind]=ismember(test,HygeTable(:,1:3),'rows');
-hyge1ProtectiveDominant(indtmp) = HygeTable(ind,4);
+if length(indtmp)>0
+     test = [ones(length(indtmp),1)*length(x), a(indtmp)'+b(indtmp)',a(indtmp)'];
+     [tmp ind]=ismember(test,HygeTable(:,1:3),'rows');
+     hyge1ProtectiveDominant(indtmp) = HygeTable(ind,4);
+end
 
-test = [ones(length(indtmp),1)*length(y), a(indtmp)'+b(indtmp)',b(indtmp)'];
-[tmp ind]=ismember(test,HygeTable(:,1:3),'rows');
-hyge1RiskDominant(indtmp) = HygeTable(ind,4);
+if length(indtmp)>0
+     test = [ones(length(indtmp),1)*length(y), a(indtmp)'+b(indtmp)',b(indtmp)'];
+     [tmp ind]=ismember(test,HygeTable(:,1:3),'rows');
+     hyge1RiskDominant(indtmp) = HygeTable(ind,4);
+end
 
 clear a b test tmp ind indtmp
 

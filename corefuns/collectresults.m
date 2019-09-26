@@ -286,12 +286,23 @@ else
      end
 end
 
-output_discovery_summary(1,:) = [nnz(fdrBPM<=0.05) nnz(fdrBPM<=0.1) nnz(fdrBPM<=0.15) nnz(fdrBPM<=0.2) nnz(fdrBPM<=0.25) nnz(fdrBPM<=0.3) nnz(fdrBPM<=0.35) nnz(fdrBPM<=0.4)];    
+% discovery summary: count number of signficance discoveries at given cutoffs
+output_discovery_summary(1,:) = [min(fdrBPM) nnz(fdrBPM<=0.05) nnz(fdrBPM<=0.1) nnz(fdrBPM<=0.15) nnz(fdrBPM<=0.2) nnz(fdrBPM<=0.25) nnz(fdrBPM<=0.3) nnz(fdrBPM<=0.35) nnz(fdrBPM<=0.4)];    
 if exist('fdrWPM','var')
-     output_discovery_summary(2,:) = [nnz(fdrWPM<=0.05) nnz(fdrWPM<=0.1) nnz(fdrWPM<=0.15) nnz(fdrWPM<=0.2) nnz(fdrWPM<=0.25) nnz(fdrWPM<=0.3) nnz(fdrWPM<=0.35) nnz(fdrWPM<=0.4)];
-     output_discovery_summary(3,:) = [nnz(fdrPATH<=0.05) nnz(fdrPATH<=0.1) nnz(fdrPATH<=0.15) nnz(fdrPATH<=0.2) nnz(fdrPATH<=0.25) nnz(fdrPATH<=0.3) nnz(fdrPATH<=0.35) nnz(fdrPATH<=0.4)];
+     output_discovery_summary(2,:) = [min(fdrWPM) nnz(fdrWPM<=0.05) nnz(fdrWPM<=0.1) nnz(fdrWPM<=0.15) nnz(fdrWPM<=0.2) nnz(fdrWPM<=0.25) nnz(fdrWPM<=0.3) nnz(fdrWPM<=0.35) nnz(fdrWPM<=0.4)];
+     output_discovery_summary(3,:) = [min(fdrPATH) nnz(fdrPATH<=0.05) nnz(fdrPATH<=0.1) nnz(fdrPATH<=0.15) nnz(fdrPATH<=0.2) nnz(fdrPATH<=0.25) nnz(fdrPATH<=0.3) nnz(fdrPATH<=0.35) nnz(fdrPATH<=0.4)];
 end
 
+% non-redundant discovery summary: count number of non-redundant signficance discoveries at given cutoffs
+[BPM_nosig_noRD,WPM_nosig_noRD,PATH_nosig_noRD,BPM_group_tmp,WPM_group_tmp,PATH_group_tmp] = check_BPM_WPM_redundancy(fdrBPM,fdrWPM,fdrPATH,bpmindfile,0.4);
+output_noRD_discovery_summary(1,:) = [min(fdrBPM) BPM_nosig_noRD];
+
+if exist('fdrWPM','var')
+     output_noRD_discovery_summary(2,:) = [min(fdrWPM) WPM_nosig_noRD];
+     output_noRD_discovery_summary(3,:) = [min(fdrPATH) PATH_nosig_noRD];
+end
+
+% 
 if exist('validationfile','var')==1
      if exist('bpm_ranksum_valid','var')==1
           output_validation_summary(1,:) = [nnz(fdrBPM<=0.05 & bpm_ranksum_valid>=-log10(0.05)) nnz(fdrBPM<=0.1 & bpm_ranksum_valid>=-log10(0.05)) ...
@@ -323,9 +334,12 @@ if exist('validationfile','var')==1
 end
 
 if exist('fdrWPM','var')
-     output_discovery_summary = array2table(output_discovery_summary,'VariableNames',{'fdr05','fdr10','fdr15','fdr20','fdr25','fdr30','fdr35','fdr40'},'RowNames',{'BPM','WPM','PATH'});
+     output_discovery_summary = array2table(output_discovery_summary,'VariableNames',{'minfdr','fdr05','fdr10','fdr15','fdr20','fdr25','fdr30','fdr35','fdr40'},'RowNames',{'BPM','WPM','PATH'});
+
+     output_noRD_discovery_summary = array2table(output_noRD_discovery_summary,'VariableNames',{'minfdr','fdr05','fdr10','fdr15','fdr20','fdr25','fdr30','fdr35','fdr40'},'RowNames',{'BPM','WPM','PATH'});
 else
-     output_discovery_summary = array2table(output_discovery_summary,'VariableNames',{'fdr05','fdr10','fdr15','fdr20','fdr25','fdr30','fdr35','fdr40'},'RowNames',{'BPM'});
+     output_discovery_summary = array2table(output_discovery_summary,'VariableNames',{'minfdr', 'fdr05','fdr10','fdr15','fdr20','fdr25','fdr30','fdr35','fdr40'},'RowNames',{'BPM'});
+     output_noRD_discovery_summary = array2table(output_noRD_discovery_summary,'VariableNames',{'minfdr','fdr05','fdr10','fdr15','fdr20','fdr25','fdr30','fdr35','fdr40'},'RowNames',{'BPM'});
 end
 
 filename = strsplit(resultfile,'/');

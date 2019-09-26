@@ -42,8 +42,10 @@ end
 pr = gcp('nocreate');
 if isempty(pr)==1
      % if parallel pool is empty, create pool 
-     parpool(nWorker)
-     pr = 0;
+     if nWorker>1
+          parpool(nWorker)
+          pr = 0;
+     end
 else
      % if parallel pool exists, use current pool
      pr = 1; 

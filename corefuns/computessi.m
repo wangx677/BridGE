@@ -56,30 +56,32 @@ if exist(ssmFileNew,'file')==2
 end
 
 % if ssmFileNew file doesn't exist
-kk=10; %define how to partition the data to invoke parallelized hygeSSI
+if nWorker==1
+     kk = 1;
+else
+     dataFile='SNPdataAR.mat';
+     load(dataFile)
+     if length(SNPdata.rsid)>5000
+          kk = 10; %define how to partition the data to invoke parallelized hygeSSI
+     else
+          kk = 5;
+     end
+end
 
 % create parallel pool
 pr = gcp('nocreate');
 if isempty(pr)==1
-     parpool(nWorker)
-     pr = 0;
+     if nWorker>1
+          parpool(nWorker)
+          pr = 0;
+     end
 else
      pr = 1;
 end
 
 if R==0
      if strcmp(model,'AA')~=1
-          % create parallel pool
-          pr = gcp('nocreate');
-          if isempty(pr)==1
-               parpool(nWorker)
-               pr = 0;
-          else
-               pr = 1;
-          end
-
           parallelhygssi(model,marginal,alpha1,alpha2,nWorker,kk,R);
- 
      elseif strcmp(model,'AA')
           % compute SNP-SNP interaction based on logistic regression
           system(sprintf('%s/scripts/runcassi.sh gwas_data_final LR 0.05 %s',getenv('BRIDGEPATH'),num2str(R)));
@@ -88,19 +90,25 @@ else
      % ssM matrix from random phenotype labels
      dataFile='SNPdataAR.mat';
      load(dataFile)
-     if exist('rand_ind','var')
+     if isfield('SNPdata','randpheno')
           % use pre-defined random phenotype labels
-          phenonew = SNPdata.randpheno(R,:);
+          if isequal(sort(SNPdata.randpheno(:,R)),1:length(SNPdata.pheno))
+               phenonew = SNPdata.randpheno(:,R);
+          elseif isequal(sort(SNPdata.randpheno(R,:)),1:length(SNPdata.pheno))
+               phenonew = SNPdata.randpheno(R,:);
+          else
+               error('Please check SNPdata.randpheno.')
+          end
      else
           % if no pre-defined random phenotype label exists
           if isfield(SNPdata,'rand_pheno')
                % sample randomization is done indpendently
                phenonew = SNPdata.rand_pheno(:,R);
-          elseif (nnz(SNPdata.pheno==0)~=nnz(SNPdata.pheno==1) & exist('plinkFile.cluster2','file')~=2)
+          elseif (nnz(SNPdata.pheno==0)~=nnz(SNPdata.pheno==1) & exist(plinkCluster2,'file')~=2)
                % data is not matched case-control
                 rand('seed',R+1);
                 phenonew = SNPdata.pheno(randperm(length(SNPdata.pheno)));
-           elseif exist('plinkFile.cluster2','file')~=2
+           elseif exist(plinkCluster2,'file')~=2
                rand('seed',R+1);
                phenonew = SNPdata.pheno(randperm(length(SNPdata.pheno)));
            else

@@ -17,16 +17,18 @@ function HygeTable = hygedictionary(N,n1,n2,nWorker)
 %    so only the following information are included in the HygeTable: 
 %    1) number of samples selected
 %    2) total number of samples with mutations
-%    3) number of selected samples have 
+%    3) number of selected samples have mutations
+%    4) hygegeometric test score: -log10 p-value 
 %
 
+% check inputs
 if (nargin < 3 | nargin >4)
     sprintf('Incorrect number of input arguments');
 end
 
 
-uC = 1:N; % all possible number of samples with mutations
-
+% all possible number of samples with mutations
+uC = 1:N; 
 
 if exist('nWorker','var')
      % create parallel pool

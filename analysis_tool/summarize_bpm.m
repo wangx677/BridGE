@@ -72,17 +72,17 @@ for k = 1:length(ind)
                 	genotype{k}{ii}='22';
         	elseif (maxidx{tt}(ind1(ii),ind2(ii)) == 3)
         		tmp1 = trans_data_AD(:,ind1(ii)).* trans_data_AR(:,ind2(ii)) == 1;
-                	tmp2 = trans_data_AR(:,ind1(ii)).* trans_data_AD(:,ind2(ii)) == 1;
+               tmp2 = trans_data_AR(:,ind1(ii)).* trans_data_AD(:,ind2(ii)) == 1;
 			if (tt==1)
                 		a = nnz(tmp1(pheno==0));
                 		hygetmp1 = hygetest(length(pheno),nnz(pheno==0),a,nnz(tmp1));
                 		a = nnz(tmp2(pheno==0));
                 		hygetmp2 = hygetest(length(pheno),nnz(pheno==0),a,nnz(tmp2));
 			else
-				a = nnz(tmp1(pheno==1));
-                                hygetmp1 = hygetest(length(pheno),nnz(pheno==0),a,nnz(tmp1));
-                                a = nnz(tmp2(pheno==1));
-                                hygetmp2 = hygetest(length(pheno),nnz(pheno==0),a,nnz(tmp2));
+          			a = nnz(tmp1(pheno==1));
+                         hygetmp1 = hygetest(length(pheno),nnz(pheno==1),a,nnz(tmp1));
+                         a = nnz(tmp2(pheno==1));
+                         hygetmp2 = hygetest(length(pheno),nnz(pheno==1),a,nnz(tmp2));
 			end
 
                		if (hygetmp1>hygetmp2)
