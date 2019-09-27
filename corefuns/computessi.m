@@ -8,8 +8,8 @@ function computessi(model,marginal,alpha1,alpha2,plinkCluster2,nWorker,R)
 %   model - disease model assumptions
 %   marginal - control individual SNP's marginal effect (joint mutation has to be more significant than the single SNP)
 %              1 means control, 0 means no control
-%   alpha1 - a signifcance constrain used in hygeSSI that controls joint mutation (11) significance 
-%   alpha2 - a signifcance constrain used in hygeSSI that controls individual mutation (10,01) 
+%   alpha1 - a significance constrain used in hygeSSI that controls joint mutation (11) significance 
+%   alpha2 - a significance constrain used in hygeSSI that controls individual mutation (10,01) 
 %          or wild type (00) signficance
 %   plinkCluster2 - Output from plink size-2 clustering after removing individuals that
 %           are not paired with others.
