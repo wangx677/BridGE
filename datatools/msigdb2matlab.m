@@ -17,9 +17,9 @@ function msigdb2matlab(symbolsFile,entrezFile)
 %      geneset.gpmatrix - gene pathway binary matrix
 
 % read data files
-symbolsData = readtable(symbolsFile,'FileType','text','ReadVariableNames',0,'dilimiter','\t');
+symbolsData = readtable(symbolsFile,'FileType','text','ReadVariableNames',0,'Delimiter','\t');
 
-entrezData = readtable(entrezFile,'FileType','text','ReadVariableNames',0,'dilimiter','\t');
+entrezData = readtable(entrezFile,'FileType','text','ReadVariableNames',0,'Delimiter','\t');
 
 % output file name
 outputFile = strsplit(symbolsFile,'.symbols.gmt');
