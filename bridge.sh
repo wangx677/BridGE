@@ -357,17 +357,30 @@ ComputeInteraction)
 # run sample permutation
 SamplePermutation)
      cd ${projectDir}/
-
-     if [ "${model}" = "RR" ]; then
-          ssmFile=ssM_hygeSSI_alpha1${alpha1}_alpha2${alpha2}_RR
-     elif [ "${model}" = "DD" ]; then
-          ssmFile=ssM_hygeSSI_alpha1${alpha1}_alpha2${alpha2}_DD
-     elif [ "${model}" = "RD" ]; then
-          ssmFile=ssM_hygeSSI_alpha1${alpha1}_alpha2${alpha2}_RD
-     elif [ "${model}" = "combined" ]; then
-          ssmFile=ssM_hygeSSI_alpha1${alpha1}_alpha2${alpha2}_combined
-     elif [ "${model}" = "AA" ]; then
-          ssmFile=ssM_lr_cassi_pv0.05
+     if [ "${marginal}" = "1" ]; then
+          if [ "${model}" = "RR" ]; then
+               ssmFile=ssM_hygeSSI_alpha1${alpha1}_alpha2${alpha2}_RR
+          elif [ "${model}" = "DD" ]; then
+               ssmFile=ssM_hygeSSI_alpha1${alpha1}_alpha2${alpha2}_DD
+          elif [ "${model}" = "RD" ]; then
+               ssmFile=ssM_hygeSSI_alpha1${alpha1}_alpha2${alpha2}_RD
+          elif [ "${model}" = "combined" ]; then
+               ssmFile=ssM_hygeSSI_alpha1${alpha1}_alpha2${alpha2}_combined
+          elif [ "${model}" = "AA" ]; then
+               ssmFile=ssM_lr_cassi_pv0.05
+          fi
+     elseif [ "${marginal}" = "0" ]; then
+          if [ "${model}" = "RR" ]; then
+               ssmFile=ssM_mhygeSSI_alpha1${alpha1}_alpha2${alpha2}_RR
+          elif [ "${model}" = "DD" ]; then
+               ssmFile=ssM_mhygeSSI_alpha1${alpha1}_alpha2${alpha2}_DD
+          elif [ "${model}" = "RD" ]; then
+               ssmFile=ssM_mhygeSSI_alpha1${alpha1}_alpha2${alpha2}_RD
+          elif [ "${model}" = "combined" ]; then
+               ssmFile=ssM_mhygeSSI_alpha1${alpha1}_alpha2${alpha2}_combined
+          elif [ "${model}" = "AA" ]; then
+               ssmFile=ssM_lr_cassi_pv0.05
+          fi
      fi
 
      if [ -z "${bpmindFile}" ]; then bpmindFile='BPMind.mat'; fi
@@ -393,16 +406,30 @@ SamplePermutation)
 Analysis)
      cd ${projectDir}/
      if [ -z "${ssmFile}" ];then
-          if [ "${model}" = "RR" ]; then
-               ssmFile=ssM_hygeSSI_alpha1${alpha1}_alpha2${alpha2}_RR
-          elif [ "${model}" = "DD" ]; then
-               ssmFile=ssM_hygeSSI_alpha1${alpha1}_alpha2${alpha2}_DD
-          elif [ "${model}" = "RD" ]; then
-               ssmFile=ssM_hygeSSI_alpha1${alpha1}_alpha2${alpha2}_RD
-          elif [ "${model}" = "combined" ]; then
-               ssmFile=ssM_hygeSSI_alpha1${alpha1}_alpha2${alpha2}_combined
-          elif [ "${model}" = "AA" ]; then
-               ssmFile=ssM_lr_cassi_pv0.05
+          if [ "${marginal}" = "1" ]; then
+               if [ "${model}" = "RR" ]; then
+                    ssmFile=ssM_hygeSSI_alpha1${alpha1}_alpha2${alpha2}_RR
+               elif [ "${model}" = "DD" ]; then
+                    ssmFile=ssM_hygeSSI_alpha1${alpha1}_alpha2${alpha2}_DD
+               elif [ "${model}" = "RD" ]; then
+                    ssmFile=ssM_hygeSSI_alpha1${alpha1}_alpha2${alpha2}_RD
+               elif [ "${model}" = "combined" ]; then
+                    ssmFile=ssM_hygeSSI_alpha1${alpha1}_alpha2${alpha2}_combined
+               elif [ "${model}" = "AA" ]; then
+                    ssmFile=ssM_lr_cassi_pv0.05
+               fi
+          elseif [ "${marginal}" = "0" ]; then
+               if [ "${model}" = "RR" ]; then
+                    ssmFile=ssM_mhygeSSI_alpha1${alpha1}_alpha2${alpha2}_RR
+               elif [ "${model}" = "DD" ]; then
+                    ssmFile=ssM_mhygeSSI_alpha1${alpha1}_alpha2${alpha2}_DD
+               elif [ "${model}" = "RD" ]; then
+                    ssmFile=ssM_mhygeSSI_alpha1${alpha1}_alpha2${alpha2}_RD
+               elif [ "${model}" = "combined" ]; then
+                    ssmFile=ssM_mhygeSSI_alpha1${alpha1}_alpha2${alpha2}_combined
+               elif [ "${model}" = "AA" ]; then
+                    ssmFile=ssM_lr_cassi_pv0.05
+               fi
           fi
      fi
 
