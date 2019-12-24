@@ -82,14 +82,21 @@ if isequal(option,'snplist')
      fwritecell(outputFile,'%s',snplist);
 elseif isequal(option,'matrix')
      % output includes SNP list, gene list, and a binary matrix
-     indsnp = find(sum(sgmatrix,2) ~= 0);
+     % indsnp = find(sum(sgmatrix,2) ~= 0);
+     snplist = snprstmp;
      indgene = find(sum(sgmatrix,1) ~= 0);
-     snplist = snprstmp(indsnp);
      genelist = genes(indgene);
-     sgmatrix = sgmatrix(indsnp,indgene);
+     sgmatrix = sgmatrix(:,indgene);
      snp2gene.snplist = snplist;
      snp2gene.genelist = genelist;
      snp2gene.sgmatrix = sgmatrix;
+
+     % make sure the order of snp2gene.snplist is the same as the snpAnnotation file
+     if isequal(snp2gene.snplist,snprs)~=1
+          [tmp ida] = ismember(snprs,snp2gene.snplist);
+          snp2gene.snplist = snp2gene.snplist(ida);
+          snp2gene.sgmatrix = snp2gene.sgmatrix(ida,:);
+     end
      save(outputFile,'snp2gene','-v7.3')
 end
 

@@ -311,16 +311,15 @@ DataProcess)
 
      if [ -n "${plinkFile}" ]; then
           printf "BridGE is processing data ${plinkFile} by calling ... \n"
-          printf "processdata.sh --job=DataProcess --projectDir=${projectDir} --plinkFile=${plinkFile} \n"
+          printf "processgwasdata.sh --job=DataProcess --projectDir=${projectDir} --plinkFile=${plinkFile} \n"
           printf "               --mind=${mind} --geno=${geno} --maf=${maf} --hwe=${hwe} --pihat=${pihat} \n"
           printf "               --matchCC=${matchCC} --ldWindow=${ldWindow} --ldShift=${ldShift} --ldR2=${ldR2} \n"
           printf "               --genesets=${genesets} --minPath=${minPath} --maxPath=${maxPath} \n"
           printf "               --geneAnnotation=${geneAnnotation} --mappingDistance=${mappingDistance} \n\n"
 
-          processdata.sh --plinkFile=${plinkFile} --mind=${mind} --geno=${geno} --maf=${maf} --hwe=${hwe} \
+          processgwasdata.sh --plinkFile=${plinkFile} --mind=${mind} --geno=${geno} --maf=${maf} --hwe=${hwe} \
                --pihat=${pihat} --matchCC=${matchCC} --ldWindow=${ldWindow} --ldShift=${ldShift} \
-               --ldR2=${ldR2}  --genesets=${genesets} --minPath=${minPath} --maxPath=${maxPath} \
-               --mappingDistance=${mappingDistance} --geneAnnotation=${geneAnnotation}
+               --ldR2=${ldR2}  
 
      elif [ -n "${matlabFile}" ]; then
           printf "BridGE is processing data ${matlabFile} by calling ...\n"
@@ -331,6 +330,9 @@ DataProcess)
           processdatamatlab.sh --matlabFile=${matlabFile} --genesets=${genesets} --minPath=${minPath} \
                 --maxPath=${maxPath} --geneAnnotation=${geneAnnotation} --mappingDistance=${mappingDistance}
      fi
+
+     processpathwaydata.sh --geneAnnotation=${geneAnnotation} --genesets=${genesets} --minPath=${minPath} \
+               --maxPath=${maxPath} --mappingDistance=${mappingDistance}
 
      printf "Data processing is complete!\n"
 

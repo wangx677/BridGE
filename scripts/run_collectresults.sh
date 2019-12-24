@@ -9,27 +9,15 @@ $*
  This script is used to summarize results and list signficant BPM/WPM/PATH
  interactions with corresponding statsitics.
 
- INPUTS:
+ REQUIRED INPUTS:
+ --ssmFile=SSMFILE
+   SNP-SNP interaction file name
+
+
+ OPTIONAL INPUTS:
   --projectDir=PROJECTDIR
      Projectdir is the data directory where results will also be stored at.
      Default is the current directory.
-
-  --interaction=INTERACTION
-     hygeSSI: hypergeometric based interaction
-     lrSSI: logistic regression based interaction
-     Default is hygeSSI.
-
-  --model=MODEL
-     Prefered interaction model which can be chosen from:
-          RR recessive-recessive interaction
-          DD dominant-dominant interaction
-          RD recessive-dominant interaction
-          combined combined all three interactions
-          AA additive-additive interaction
-     Default is combined.
-
-  --ssmFile=SSMFILE
-     SNP-SNP interaction file name
     
   --validationDir=VALIDATIONDIR
      Validation is the data directory where results from validation dataset
@@ -65,8 +53,6 @@ for argument in $options
 do
      case $argument in
      --projectDir=*) projectDir=${argument/*=/""} ;;
-     --interaction=*) interaction=${argument/*=/""} ;;
-     --model=*) model=${argument/*=/""} ;;
      --ssmFile=*) ssmFile=${argument/*=/""} ;;
      --validationDir=*) validationDir=${argument/*=/""} ;;
      --fdrCutoff=*) fdrCutoff=${argument/*=/""} ;;
@@ -78,46 +64,20 @@ do
 done
 
 # set defaults
-if [ -z "${projectDir}" ]; then printf "Please specify projectDir. \n"; exit; fi
-if [ -z "${interaction}" ]; then interaction=hygeSSI; fi
-if [ -z "${model}" ] && [ -z "${ssmFile}" ]; then printf "Please specify model. \n"; exit; fi
+if [ -z "${projectDir}" ]; then projectDir=`pwd`; fi
 if [ -z "${fdrCutoff}" ]; then fdrCutoff=0.4; fi
 if [ -z "${bpmind}" ]; then bpmind=BPMind.mat; fi
 if [ -z "${snpPathwayFile}" ]; then snpPathwayFile=snp_pathway_min10_max300.mat; fi
 if [ -z "${snpGeneMappingFile}" ]; then snpGeneMappingFile=snpgenemapping_50kb.mat; fi
 
-
-if [ -z "${ssmFile}" ]; then
-     if [ "$interaction" == "hygeSSI" ]; then
-          resultfile=results_ssM_hygeSSI_alpha10.05_alpha20.05_${model}_R0.mat
-          ssmFile=ssM_hygeSSI_alpha10.05_alpha20.05_${model}_R0.mat
-     elif [ "$interaction" == "regSSI" ]; then
-          resultfile=results_ssM_regSSI_${model}_R0.mat
-          ssmFile=ssM_regSSI_${model}_R0.mat
-     elif [ "$interaction" == "lrSSI" ]; then
-          resultfile=results_ssM_lr_cassi_pv0.05_R0.mat
-          ssmFile=ssM_lr_cassi_pv0.05_R0.mat
-     fi
-else
-     resultfile=results_${ssmFile}_R0.mat
-     ssmFile=${ssmFile}_R0.mat
-fi
+# check required inputs
+if [ -z "${ssmFile}" ]; then echo "Please specify ssmFile to proceed."; exit; fi
 
 
 if [ -z "${validationDir}" ]; then
-     matbg "collectresults('${resultfile}',${fdrCutoff},'${ssmFile}','${bpmind}','${snpPathwayFile}','${snpGeneMappingFile}')" matbg_$model.log
+     nice matlab -nodisplay -nodesktop -nosplash -r "collectresults('results_${ssmFile}',${fdrCutoff},'${ssmFile}','${bpmind}','${snpPathwayFile}','${snpGeneMappingFile}')" </dev/null> /dev/null
 else
-     if [ -z "${ssmFile}" ]; then
-          if [ "$interaction" == "hygeSSI" ]; then
-               validationfile=${BRIDGEPATH}/${validationDir}/results_ssM_hygeSSI_alpha10.05_alpha20.05_${model}_R0.mat
-          elif [ "$interaction" == "regSSI" ]; then
-               validationfile=${BRIDGEPATH}/${validationDir}/results_ssM_regSSI_${model}_R0.mat
-          elif [ "$interaction" == "lrSSI" ]; then
-               validationfile=${BRIDGEPATH}/${validationDir}/results_ssM_lr_cassi_pv0.05_R0.mat
-          fi
-     else
-          validationfile=${BRIDGEPATH}/${validationDir}/results_${ssmFile}
-     fi
-     matbg "collectresults('${resultfile}',${fdrCutoff},'${ssmFile}','${bpmind}','${snpPathwayFile}','${snpGeneMappingFile}','${validationfile}')" matbg_$model.log
+     validationfile=${BRIDGEPATH}/${validationDir}/results_${ssmFile}
+     matbg "collectresults('results_#{ssmFile}',${fdrCutoff},'${ssmFile}','${bpmind}','${snpPathwayFile}','${snpGeneMappingFile}','${validationfile}')" matbg_$model.log
 fi
 

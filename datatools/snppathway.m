@@ -48,12 +48,12 @@ geneset.gpmatrix = geneset.gpmatrix(:,ind);
 geneset.pathwaynames = geneset.pathwaynames(ind);
 
 % remove genes that can't be mapped to any pathways
-ind = find(sum(geneset.gpmatrix,2)==0);
-geneset.genenames(ind)=[];
-geneset.gpmatrix(ind,:)=[];
-if isfield(geneset,'entrezids')
-     geneset.entrezids(ind) = [];
-end
+% ind = find(sum(geneset.gpmatrix,2)==0);
+% geneset.genenames(ind)=[];
+% geneset.gpmatrix(ind,:)=[];
+% if isfield(geneset,'entrezids')
+%      geneset.entrezids(ind) = [];
+% end
 
 % reorder geneset.gpmatrix and snp2gene.sgmatrix to make genes in two matrices have same order
 [t inda indb] = intersect(geneset.genenames,snp2gene.genelist);
