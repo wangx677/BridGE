@@ -39,7 +39,7 @@ for argument in $options
 do
         case $argument in
         --PlinkFile=*) PlinkFile=${argument/*=/""} ;;
-	--OutputFile=*) OutputFile=${argument/*=/""} ;;
+        --OutputFile=*) OutputFile=${argument/*=/""} ;;
         --geno=*) geno=${argument/*=/""} ;;
         --mind=*) mind=${argument/*=/""} ;;
         --maf=*) maf=${argument/*=/""} ;;

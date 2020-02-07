@@ -115,29 +115,12 @@ removerelatedindividual.sh ${plinkFile}_tmp2 ${plinkFile}_tmp3 ${pihat}
 if [ "${matchCC}" -eq 1 ] 
 then
      matchcasecontrol.sh ${plinkFile}_tmp3 gwas_data_all 
-     mv ${plinkFile}_tmp3.cluster1 plinkFile.cluster1
-     mv ${plinkFile}_tmp3.cluster2 plinkFile.cluster2
-     mv ${plinkFile}_tmp3.cluster2.orig plinkFile.cluster2.orig
+     mv ${plinkFile}_tmp3.cluster1 PlinkFile.cluster1
+     mv ${plinkFile}_tmp3.cluster2 PlinkFile.cluster2
+     mv ${plinkFile}_tmp3.cluster2.orig PlinkFile.cluster2.orig
 else
      plink1.9 --bfile ${plinkFile}_tmp3 --make-bed --out gwas_data_all
 fi
-
-# get the list of Genes included in the gene sets
-# nice matlab -nodisplay -nodesktop -nojvm -r "genesetglist('${genesets}'); \
-#	exit"  </dev/null> /dev/null
-# nice matlab -nodisplay -nodesktop -nojvm -r "genesetsantn('geneList_from_genesets', \
-#	'${geneAnnotation}','geneList_from_genesets_annotation'); \
-#	exit" </dev/null> /dev/null
-#
-# get the list of snps which can be mapped to the Genes
-# nice matlab -nodisplay -nodesktop -nojvm -r "mapsnp2gene('gwas_data_all.bim', \
-#	'geneList_from_genesets_annotation',$mappingDistance,'snplist', \
-#	'snp2keep_geneset');exit"  </dev/null> /dev/null  
-#
-# get less redundant SNP set
-# plink1.9 --bfile gwas_data_all --extract snp2keep_geneset --allow-no-sex \
-#	--indep-pairwise ${ldWindow} ${ldShift} ${ldR2} --noweb \
-#	--out gwas_data_all > /dev/null
 
 # get less redundant SNP set
 plink1.9 --bfile gwas_data_all --allow-no-sex \

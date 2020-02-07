@@ -19,7 +19,7 @@ function sim = bpmsim(BPMind1x,BPMind2x,BPMind1y,BPMind2y,option,ssM)
 t1 = length(BPMind1x);
 t2 = length(BPMind1y);
 
-% check if X=Y
+% check if BPMind1 is equal to BPMind2
 TEST = isequal(BPMind1x,BPMind1y)==1 & isequal(BPMind2x,BPMind2y)==1;
 
 BPMind1x = repmat(BPMind1x',1,t2);

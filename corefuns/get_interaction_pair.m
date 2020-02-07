@@ -47,13 +47,7 @@ else
      if isfield(BPM,'path1')
            nn = find(ismember(BPM.path1,pathname1)==1 & ismember(BPM.path2,pathname2)==1);
      else
-          ii = find(ismember(snpset.pathwaynames,pathname1)==1);
-          jj = find(ismember(snpset.pathwaynames,pathname2)==1);
-          A = zeros(length(snpset.pathwaynames),length(snpset.pathwaynames));
-          A(ii,jj) = 1;
-          A(jj,ii) = 1;
-          A = squareform(A);
-          nn = find(A==1);
+          nn = find(ismember(WPM.pathway(BPM.path1idx),pathname1)==1 & ismember(WPM.pathway(BPM.path2idx),pathname2)==1);
      end
 
      ind1 = BPM.ind1{nn};

@@ -1,4 +1,4 @@
-function collectresults(resultfile,fdrcut,ssmfile,bpmindfile,snppathwayfile,snpgenemappingfile,validationfile)
+function collectresults(resultfile,fdrcut,ssmfile,bpmindfile,snppathwayfile,snpgenemappingfile)
 % resultfile='/project/csbio/wwang/BridGE_nobin/project_PD_Simon/results_ssM_hygeSSI_alpha10.05_alpha20.05_combined_R0.mat';
 % validationfile='/project/csbio/wwang/BridGE_nobin/project_PD_NGRC/results_ssM_hygeSSI_alpha10.05_alpha20.05_combined_R0.mat';
 
@@ -56,22 +56,12 @@ if length(ind_bpm>0)
      fdrBPM = fdrBPM(ind_bpm)';
      bpm_pv_discovery = bpm_pv(ind_bpm)';
      bpm_ranksum_discovery = bpm_ranksum(ind_bpm)';
-     
-     % retreive relevant information about effect size
-     netcut = 1;
-     pcutoff = 1;
-     [~, ~, ~, effectsize_bpm] = summarize_bpm(ssmfile,bpmindfile,resultfile,diseasemodel,snppathwayfile,fdrcut,pcutoff,netcut);
 end
 
 if (length(ind_wpm)>0)
      fdrWPM = fdrWPM(ind_wpm)';
      wpm_pv_discovery = wpm_pv(ind_wpm)';
      wpm_ranksum_discovery = wpm_ranksum(ind_wpm)';
-     
-     % retreive relevant information about effect size
-     netcut = 1;
-     pcutoff = 1;
-     [~, ~, ~, effectsize_wpm] = summarize_wpm(ssmfile,bpmindfile,resultfile,diseasemodel,snppathwayfile,fdrcut,pcutoff,netcut);
 end
 
 if (length(ind_path)>0)     
@@ -82,25 +72,6 @@ end
 
 clear fdrBPM2 fdrWPM2 fdrPATH2 bpm_pv wpm_pv path_pv bpm_ranksum wpm_ranksum path_ranksum
 
-% if validationfile exist, collect validation stats
-if exist('validationfile','var')==1
-     load(validationfile)
-     if length(ind_bpm>0)
-          bpm_ranksum_valid = bpm_ranksum(ind_bpm)';
-          bpm_pv_valid = bpm_pv(ind_bpm)';
-     end
-
-     if (length(ind_wpm)>0)
-          wpm_ranksum_valid = wpm_ranksum(ind_wpm)';
-          wpm_pv_valid = wpm_pv(ind_wpm)';
-     end
-
-     if (length(ind_path)>0)
-          path_ranksum_valid = path_ranksum(ind_path)';
-          path_pv_valid = path_pv(ind_path)';
-     end
-end
-clear fdrBPM2 fdrWPM2 fdrPATH2 bpm_pv wpm_pv path_pv bpm_ranksum wpm_ranksum path_ranksum
 
 % retreive relevant information for driver SNPs and corresponding genes
 if (length(ind_bpm)>0 | length(ind_wpm)>0 | length(ind_path)>0)
@@ -232,50 +203,35 @@ if exist('validationfile','var')==1
      if length(ind_bpm)>0
           fdrBPM = round(fdrBPM*100)/100;
           bpm_ranksum_discovery = round(bpm_ranksum_discovery*100)/100;
-          bpm_ranksum_valid = round(bpm_ranksum_valid*100)/100;
-          bpm_eff_case = round(effectsize_bpm.cases*100)/100;
-          bpm_eff_control = round(effectsize_bpm.controls*100)/100;
-          bpm_eff_size_OR = round(effectsize_bpm.oddsratio*100)/100; 
-          output_bpm_table = table(path1,path2,fdrBPM,eff_bpm,bpm_size,bpm_pv_discovery,bpm_ranksum_discovery,bpm_eff_case,bpm_eff_control,bpm_eff_size_OR,bpm_pv_valid,bpm_ranksum_valid,bpm_path1_drivers,bpm_path2_drivers);
+          output_bpm_table = table(path1,path2,fdrBPM,eff_bpm,bpm_size,bpm_pv_discovery,bpm_ranksum_discovery,bpm_path1_drivers,bpm_path2_drivers);
      end
 
      if length(ind_wpm)>0
           path = path_wpm;
           fdrWPM = round(fdrWPM*100)/100;
           wpm_ranksum_discovery = round(wpm_ranksum_discovery*100)/100;
-          wpm_ranksum_valid = round(wpm_ranksum_valid*100)/100;
-          wpm_eff_case = round(effectsize_wpm.cases*100)/100;
-          wpm_eff_control = round(effectsize_wpm.controls*100)/100;
-          wpm_eff_size_OR = round(effectsize_wpm.oddsratio*100)/100;
-          output_wpm_table = table(path,fdrWPM,eff_wpm,wpm_size,wpm_pv_discovery,wpm_ranksum_discovery,wpm_eff_case,wpm_eff_control,wpm_eff_size_OR,wpm_pv_valid,wpm_ranksum_valid,wpm_path_drivers);
+          output_wpm_table = table(path,fdrWPM,eff_wpm,wpm_size,wpm_pv_discovery,wpm_ranksum_discovery,wpm_path_drivers);
      end
 
      if length(ind_path)>0
           path = path_path;
           fdrPATH = round(fdrPATH*100)/100;
           path_ranksum_discovery = round(path_ranksum_discovery*100)/100;
-          path_ranksum_valid = round(path_ranksum_valid*100)/100;
-          output_path_table = table(path,fdrPATH,eff_path,path_size,path_pv_discovery,path_ranksum_discovery,path_pv_valid,path_ranksum_valid);
+          output_path_table = table(path,fdrPATH,eff_path,path_size,path_pv_discovery,path_ranksum_discovery);
      end
 
 else
      if length(ind_bpm)>0
           fdrBPM = round(fdrBPM*100)/100;
           bpm_ranksum_discovery = round(bpm_ranksum_discovery*100)/100;
-          bpm_eff_case = round(effectsize_bpm.cases*100)/100;
-          bpm_eff_control = round(effectsize_bpm.controls*100)/100;
-          bpm_eff_size_OR = round(effectsize_bpm.oddsratio*100)/100;
-          output_bpm_table = table(path1,path2,fdrBPM,eff_bpm,bpm_size,bpm_pv_discovery,bpm_ranksum_discovery,bpm_eff_case,bpm_eff_control,bpm_eff_size_OR,bpm_path1_drivers,bpm_path2_drivers);
+          output_bpm_table = table(path1,path2,fdrBPM,eff_bpm,bpm_size,bpm_pv_discovery,bpm_ranksum_discovery,bpm_path1_drivers,bpm_path2_drivers);
      end
 
      if length(ind_wpm)>0
           path = path_wpm;
           fdrWPM = round(fdrWPM*100)/100;
           wpm_ranksum_discovery = round(wpm_ranksum_discovery*100)/100;
-          wpm_eff_case = round(effectsize_wpm.cases*100)/100;
-          wpm_eff_control = round(effectsize_wpm.controls*100)/100;
-          wpm_eff_size_OR = round(effectsize_wpm.oddsratio*100)/100;
-          output_wpm_table = table(path,fdrWPM,eff_wpm,wpm_size,wpm_pv_discovery,wpm_ranksum_discovery,wpm_eff_case,wpm_eff_control,wpm_eff_size_OR,wpm_path_drivers);
+          output_wpm_table = table(path,fdrWPM,eff_wpm,wpm_size,wpm_pv_discovery,wpm_ranksum_discovery,wpm_path_drivers);
      end
 
      if length(ind_path)>0
@@ -302,37 +258,6 @@ if exist('fdrWPM','var')
      output_noRD_discovery_summary(3,:) = [min(fdrPATH) PATH_nosig_noRD];
 end
 
-% 
-if exist('validationfile','var')==1
-     if exist('bpm_ranksum_valid','var')==1
-          output_validation_summary(1,:) = [nnz(fdrBPM<=0.05 & bpm_ranksum_valid>=-log10(0.05)) nnz(fdrBPM<=0.1 & bpm_ranksum_valid>=-log10(0.05)) ...
-                         nnz(fdrBPM<=0.15 & bpm_ranksum_valid>=-log10(0.05)) nnz(fdrBPM<=0.2 & bpm_ranksum_valid>=-log10(0.05)) nnz(fdrBPM<=0.25 & bpm_ranksum_valid>=-log10(0.05)) ...
-                          nnz(fdrBPM<=0.3 & bpm_ranksum_valid>=-log10(0.05)) nnz(fdrBPM<=0.35 & bpm_ranksum_valid>=-log10(0.05)) nnz(fdrBPM<=0.4 & bpm_ranksum_valid>=-log10(0.05))];
-     else
-          output_validation_summary(1,:) = [0 0 0 0 0 0 0 0];
-     end
-
-     if exist('wpm_ranksum_valid','var')==1
-          output_validation_summary(2,:) = [nnz(fdrWPM<=0.05 & wpm_ranksum_valid>=-log10(0.05)) nnz(fdrWPM<=0.1 & wpm_ranksum_valid>=-log10(0.05)) ...
-                         nnz(fdrWPM<=0.15 & wpm_ranksum_valid>=-log10(0.05)) nnz(fdrWPM<=0.2 & wpm_ranksum_valid>=-log10(0.05)) nnz(fdrWPM<=0.25 & wpm_ranksum_valid>=-log10(0.05)) ...
-                         nnz(fdrWPM<=0.3 & wpm_ranksum_valid>=-log10(0.05)) nnz(fdrWPM<=0.35 & wpm_ranksum_valid>=-log10(0.05)) nnz(fdrWPM<=0.4 & wpm_ranksum_valid>=-log10(0.05))];
-     else
-          output_validation_summary(2,:) = [0 0 0 0 0 0 0 0];
-     end
-
-     if exist('path_ranksum_valid','var')==1
-          output_validation_summary(3,:) = [nnz(fdrPATH<=0.05 & path_ranksum_valid>=-log10(0.05)) nnz(fdrPATH<=0.1 & path_ranksum_valid>=-log10(0.05)) ...
-                         nnz(fdrPATH<=0.15 & path_ranksum_valid>=-log10(0.05)) nnz(fdrPATH<=0.2 & path_ranksum_valid>=-log10(0.05)) nnz(fdrPATH<=0.25 & path_ranksum_valid>=-log10(0.05)) ...
-                         nnz(fdrPATH<=0.3 & path_ranksum_valid>=-log10(0.05)) nnz(fdrPATH<=0.35 & path_ranksum_valid>=-log10(0.05)) nnz(fdrPATH<=0.4 & path_ranksum_valid>=-log10(0.05))];
-     else
-          output_validation_summary(3,:) = [ 0 0 0 0 0 0 0 0];
-     end
-
-     output_validation_summary = round((output_validation_summary./output_discovery_summary)*100)/100;
-
-     output_validation_summary = array2table(output_validation_summary,'VariableNames',{'fdr05','fdr10','fdr15','fdr20','fdr25','fdr30','fdr35','fdr40'},'RowNames',{'BPM','WPM','PATH'});
-end
-
 if exist('fdrWPM','var')
      output_discovery_summary = array2table(output_discovery_summary,'VariableNames',{'minfdr','fdr05','fdr10','fdr15','fdr20','fdr25','fdr30','fdr35','fdr40'},'RowNames',{'BPM','WPM','PATH'});
 
@@ -346,11 +271,7 @@ filename = strsplit(resultfile,'/');
 filename = filename{end};
 
 
-if exist('validationfile','var')==1
-     save(sprintf('output_%s',filename),'output*','resultfile','validationfile');
-else
-     save(sprintf('output_%s',filename),'output*','resultfile');
-end
+save(sprintf('output_%s',filename),'output*','resultfile');
 
 filename = sprintf('output_%s.xls',filename);
 
@@ -385,9 +306,7 @@ end
 
 writetable(output_discovery_summary,filename,'Sheet',1,'WriteRowNames',true)
 
-if exist('validationfile','var')==1
-     writetable(output_validation_summary,filename,'Sheet',2,'WriteRowNames',true)
-end
+writetable(output_noRD_discovery_summary,filename,'Sheet',2,'WriteRowNames',true)
 
 if length(ind_bpm)>0
      writetable(output_bpm_table,filename,'Sheet',3)
