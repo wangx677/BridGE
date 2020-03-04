@@ -60,6 +60,7 @@ if [ -z "${projectDir}" ]; then projectDir=`pwd`; fi
 if [ -z "${minPath}" ]; then minPath=10; fi
 if [ -z "${pvalueCutoff}" ]; then pvalueCutoff=0.005; fi
 if [ -z "${bpmindFile}" ]; then bpmindFile=BPMind.mat; fi
+if [ -z "${samplePerms}" ]; then samplePerms=10; fi
 
 # check required inuts
 if [ -z "${ssmFile}" ]; then echo "Please specify ssmFile to proceed."; exit; fi

@@ -1,7 +1,6 @@
 function [BPM_nosig_noRD,WPM_nosig_noRD,PATH_nosig_noRD,BPM_group,WPM_group,PATH_group] = check_BPM_WPM_redundancy(fdrBPM,fdrWPM,fdrPATH,bpmindfile,FDRcut)
 
 load(bpmindfile)
-ssM{1} = 0;ssM{2}=0; % arbitrary -- it's not actully used because the overlap is based on pathway genes not actual interactions.  
 j = 1;
 for fdrcut=0.05:0.05:FDRcut
         ind = find(fdrBPM<=fdrcut);
@@ -29,7 +28,7 @@ for fdrcut=0.05:0.05:FDRcut
         end
 
         if (length(ind1)>1)
-                BPM_sim{1} = bpmsim(BPM.ind1(ind1),BPM.ind2(ind1),BPM.ind1(ind1),BPM.ind2(ind1),2,ssM{1});
+                BPM_sim{1} = bpmsim(BPM.ind1(ind1),BPM.ind2(ind1),BPM.ind1(ind1),BPM.ind2(ind1));
                 TTT=BPM_sim{1}>=0.25;
                 [noRD{1},group{1}] = graphconncomp(sparse(TTT));
                 %[num2cell(group') path1(ind1)' path2(ind1)']
@@ -43,7 +42,7 @@ for fdrcut=0.05:0.05:FDRcut
         end
 
         if (length(ind2)>1)
-                BPM_sim{2} = bpmsim(BPM.ind1(ind2),BPM.ind2(ind2),BPM.ind1(ind2),BPM.ind2(ind2),2,ssM{1});
+                BPM_sim{2} = bpmsim(BPM.ind1(ind2),BPM.ind2(ind2),BPM.ind1(ind2),BPM.ind2(ind2));
                 TTT=BPM_sim{2}>=0.25;
                 [noRD{2},group{2}] = graphconncomp(sparse(TTT));
                 %[num2cell(group') path1(ind2)' path2(ind2)']
@@ -57,7 +56,7 @@ for fdrcut=0.05:0.05:FDRcut
         end
 
         if (length(ind3)>1)
-                BPM_sim{3} = bpmsim(WPM.ind(ind3),WPM.ind(ind3),WPM.ind(ind3),WPM.ind(ind3),2,ssM{1});
+                BPM_sim{3} = bpmsim(WPM.ind(ind3),WPM.ind(ind3),WPM.ind(ind3),WPM.ind(ind3));
                 TTT=BPM_sim{3}>=0.25;
                 [noRD{3},group{3}] = graphconncomp(sparse(TTT));
                 %[num2cell(group') path1(ind1)' path2(ind1)']
@@ -71,7 +70,7 @@ for fdrcut=0.05:0.05:FDRcut
         end
 
          if (length(ind4)>1)
-                BPM_sim{4} = bpmsim(WPM.ind(ind4),WPM.ind(ind4),WPM.ind(ind4),WPM.ind(ind4),2,ssM{1});
+                BPM_sim{4} = bpmsim(WPM.ind(ind4),WPM.ind(ind4),WPM.ind(ind4),WPM.ind(ind4));
                 TTT=BPM_sim{4}>=0.25;
                 [noRD{4},group{4}] = graphconncomp(sparse(TTT));
                 %[num2cell(group') path1(ind1)' path2(ind1)']
