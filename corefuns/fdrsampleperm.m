@@ -28,15 +28,33 @@ for i=0:N
      load(genstatsfile)
      bpm(i+1,:) = [bpm_local{1} bpm_local{2}];
      bpm_pv(i+1,:) = [bpm_local_pv{1} bpm_local_pv{2}];
-     
+
+     bpm_protective(i+1,:) = bpm_local{1};
+     bpm_risk(i+1,:) =  bpm_local{2};
+
+     bpm_pv_protective(i+1,:) = bpm_local_pv{1};
+     bpm_pv_risk(i+1,:) =  bpm_local_pv{2};
+
      if exist('WPMsize','var')
           wpm(i+1,:) = [wpm_local{1} wpm_local{2}];
+          wpm_protective(i+1,:) = wpm_local{1};
+          wpm_risk(i+1,:) =  wpm_local{2};
+
           path(i+1,:) = [path_degree{1} path_degree{2}];
-     
+          path_protective(i+1,:) = path_degree{1};
+          path_risk(i+1,:) =  path_degree{2};
+
           wpm_pv(i+1,:) = [wpm_local_pv{1} wpm_local_pv{2}];
+          wpm_pv_protective(i+1,:) = wpm_local_pv{1};
+          wpm_pv_risk(i+1,:) =  wpm_local_pv{2};
+
           path_pv(i+1,:) = [path_degree_pv{1} path_degree_pv{2}];
+          path_pv_protective(i+1,:) = path_degree_pv{1};
+          path_pv_risk(i+1,:) =  path_degree_pv{2};
+
           clear wpm_local wpm_local_pv path_degree path_degree_pv
      end
+
 end
 
 clear bpm_local bpm_local_pv density* maxidx minidx 
@@ -45,148 +63,310 @@ IND = find(BPMpath1size<minPath | BPMpath2size<minPath);
 bpm(:,IND) = 0;
 bpm_pv(:,IND) = 1;
 
-%% compute FDR for BPMs
+%% compute FDR for BPMs (protective and risk)
 ind = find(bpm_pv(1,:)<=pcut);
 
 if isempty(ind)~=1
 
      for i=1:length(ind)
-          % based on local ranksum test p-value
-          m1(i) = nnz(bpm_pv(1,:)<=bpm_pv(1,ind(i)));
-          m2(i) = nnz(bpm_pv(2:end,:)<=bpm_pv(1,ind(i)))/N;
-
           % combine local ranksum test and its p-value
-          n1(i) = nnz(bpm_pv(1,:)<=bpm_pv(1,ind(i)) & bpm(1,:)>=round(bpm(1,ind(i))));
-          n2(i) = nnz(bpm_pv(2:end,:)<=bpm_pv(1,ind(i)) & bpm(2:end,:)>= round(bpm(1,ind(i))))/N;
+          n1(i) = nnz(bpm_pv(1,:)<=bpm_pv(1,ind(i)) & bpm(1,:)>=bpm(1,ind(i)));
+          n2(i) = nnz(bpm_pv(2:end,:)<=bpm_pv(1,ind(i)) & bpm(2:end,:)>= bpm(1,ind(i)))/N;
      end
 
-     fdr1 = m2./m1;
-     fdr2 = n2./n1;
+     fdr = n2./n1;
 
-     clear m1 m2 n1 n2
+     clear n1 n2
  
-     fdrBPM1 = ones(size(bpm(1,:)));
-     fdrBPM2 = ones(size(bpm(1,:)));
+     fdrBPM = ones(size(bpm(1,:)));
 
-     % sort fdr based on bpm_pv scores 
-     testM = [fdr1' bpm_pv(1,ind)'];
-     [testM idx] = sortrows(testM,[-2]);
+     % adjust FDR
+     % sometimes more significant BPMs can have higher FDRs
+     % we make FDR adjustment to such BPMs
+     testM = [fdr' bpm_pv(1,ind)' bpm(1,ind)'];
+
+     [testM idx] = sortrows(testM,-1);
 
      for i=1:size(testM,1)
-          testM(i,1) = min(testM(1:i,1));
+          indtmp = find(testM(:,2)>=testM(i,2) & testM(:,3)<=testM(i,3));
+          fdrnew(i) = min(testM(indtmp,1));
      end
 
      % assign FDR to BPMs
-     fdrBPM1(ind(idx)) = testM(:,1);
+     fdrBPM(ind(idx)) = fdrnew;
 
-     % sort fdr based on bpm_pv and bpm_degree_local
-     testM = [fdr2' bpm_pv(1,ind)' round(bpm(1,ind)')];
-
-     [testM idx] = sortrows(testM,[-2 3]);
-
-     for i=1:size(testM,1)
-          testM(i,1) = min(testM(1:i,1));
-     end
-
-     % assign FDR to BPMs
-     fdrBPM2(ind(idx)) = testM(:,1);
-
-     clear fdr1 fdr2
+     clear fdr fdrnew 
 end
 
+%% compute FDR for BPMs (protective only)
+ind = find(bpm_pv_protective(1,:)<=pcut);
+
+if isempty(ind)~=1
+
+     for i=1:length(ind)
+          % combine local ranksum test and its p-value
+          n1(i) = nnz(bpm_pv_protective(1,:)<=bpm_pv_protective(1,ind(i)) & bpm_protective(1,:)>=bpm_protective(1,ind(i)));
+          n2(i) = nnz(bpm_pv_protective(2:end,:)<=bpm_pv_protective(1,ind(i)) & bpm_protective(2:end,:)>= bpm_protective(1,ind(i)))/N;
+     end
+
+     fdr = n2./n1;
+
+     clear n1 n2
+
+     fdrBPM_protective = ones(size(bpm_protective(1,:)));
+
+     % sort fdr based on bpm_pv_protective and bpm_degree_local
+     testM = [fdr' bpm_pv_protective(1,ind)' bpm_protective(1,ind)'];
+
+     [testM idx] = sortrows(testM,-1);
+
+     for i=1:size(testM,1)
+          indtmp = find(testM(:,2)>=testM(i,2) & testM(:,3)<=testM(i,3));
+          fdrnew(i) = min(testM(indtmp,1));
+     end
+
+     % assign FDR to BPMs
+     fdrBPM_protective(ind(idx)) = fdrnew;
+
+     clear fdr fdrnew
+else
+     fdrBPM_protective = ones(size(bpm_protective(1,:)));
+end
+
+%% compute FDR for BPMs (risk only)
+ind = find(bpm_pv_risk(1,:)<=pcut);
+
+if isempty(ind)~=1
+
+     for i=1:length(ind)
+          % combine local ranksum test and its p-value
+          n1(i) = nnz(bpm_pv_risk(1,:)<=bpm_pv_risk(1,ind(i)) & bpm_risk(1,:)>=bpm_risk(1,ind(i)));
+          n2(i) = nnz(bpm_pv_risk(2:end,:)<=bpm_pv_risk(1,ind(i)) & bpm_risk(2:end,:)>= bpm_risk(1,ind(i)))/N;
+     end
+
+     fdr = n2./n1;
+
+     clear n1 n2
+
+     fdrBPM_risk = ones(size(bpm_risk(1,:)));
+
+     % sort fdr based on bpm_pv_risk and bpm_degree_local
+     testM = [fdr' bpm_pv_risk(1,ind)' bpm_risk(1,ind)'];
+
+     [testM idx] = sortrows(testM,-1);
+
+     for i=1:size(testM,1)
+          indtmp = find(testM(:,2)>=testM(i,2) & testM(:,3)<=testM(i,3));
+          fdrnew(i) = min(testM(indtmp,1));
+     end
+
+     % assign FDR to BPMs
+     fdrBPM_risk(ind(idx)) = fdrnew;
+
+     clear fdr fdrnew
+else
+     fdrBPM_risk = ones(size(bpm_risk(1,:)));
+end
+
+
 if exist('WPMsize','var')
-     %% compute FDR for WPMs
+     %% compute FDR for WPMs (protective and risk)
      ind = find(wpm_pv(1,:)<=0.05);
 
      if isempty(ind)~=1
 
           for i=1:length(ind)
-               % based on local ranksum test p-value
-               m1(i) = nnz(wpm_pv(1,:)<=wpm_pv(1,ind(i)));
-               m2(i) = nnz(wpm_pv(2:end,:)<=wpm_pv(1,ind(i)))/N;
-
                % combine local ranksum test and its p-value
                n1(i) = nnz(wpm_pv(1,:)<=wpm_pv(1,ind(i)) & wpm(1,:)>=wpm(1,ind(i)));
                n2(i) = nnz(wpm_pv(2:end,:)<=wpm_pv(1,ind(i)) & wpm(2:end,:)>= wpm(1,ind(i)))/N;
           end
 
-          fdr1 = m2./m1;
-          fdr2 = n2./n1;
+          fdr = n2./n1;
 
-          clear m1 m2 n1 n2
+          clear n1 n2
 
-          fdrWPM1 = ones(size(wpm(1,:)));
-          fdrWPM2 = ones(size(wpm(1,:)));
-
-          % sort fdr based on wpm_pv scores
-          testM = [fdr1' wpm_pv(1,ind)'];
-          [testM idx] = sortrows(testM,[-2]);
-
-          for i=1:size(testM,1)
-               testM(i,1) = min(testM(1:i,1));
-          end
-
-          % assign FDR to WPMs
-          fdrWPM1(ind(idx)) = testM(:,1);
+          fdrWPM = ones(size(wpm(1,:)));
 
           % sort fdr based on wpm_pv and wpm_degree_local
-          testM = [fdr2' wpm_pv(1,ind)' round(wpm(1,ind)')];
+          testM = [fdr' wpm_pv(1,ind)' round(wpm(1,ind)')];
 
-          [testM idx] = sortrows(testM,[-2 3]);
+          [testM idx] = sortrows(testM,-1);
 
           for i=1:size(testM,1)
-               testM(i,1) = min(testM(1:i,1));
+               indtmp = find(testM(:,2)>=testM(i,2) & testM(:,3)<=testM(i,3));
+               fdrnew(i) = min(testM(indtmp,1));
           end
 
           % assign FDR to WPMs
-          fdrWPM2(ind(idx)) = testM(:,1);
+          fdrWPM(ind(idx)) = fdrnew;
+          clear fdr fdrnew
+     else
+          fdrWPM = ones(size(wpm(1,:)));
      end
 
-     %% compute FDR for PATH
+     %% compute FDR for WPMs (protective only)
+     ind = find(wpm_pv_protective(1,:)<=0.05);
 
+     if isempty(ind)~=1
+
+          for i=1:length(ind)
+               % combine local ranksum test and its p-value
+               n1(i) = nnz(wpm_pv_protective(1,:)<=wpm_pv_protective(1,ind(i)) & wpm_protective(1,:)>=wpm_protective(1,ind(i)));
+               n2(i) = nnz(wpm_pv_protective(2:end,:)<=wpm_pv_protective(1,ind(i)) & wpm_protective(2:end,:)>= wpm_protective(1,ind(i)))/N;
+          end
+
+          fdr = n2./n1;
+
+          clear n1 n2
+
+          fdrWPM_protective = ones(size(wpm_protective(1,:)));
+
+          % sort fdr based on wpm_pv_protective and wpm_degree_local
+          testM = [fdr' wpm_pv_protective(1,ind)' round(wpm_protective(1,ind)')];
+
+          [testM idx] = sortrows(testM,-1);
+
+           for i=1:size(testM,1)
+               indtmp = find(testM(:,2)>=testM(i,2) & testM(:,3)<=testM(i,3));
+               fdrnew(i) = min(testM(indtmp,1));
+          end
+
+          % assign FDR to WPMs
+          fdrWPM_protective(ind(idx)) = fdrnew;
+          clear fdr fdrnew
+     else
+          fdrWPM_protective = ones(size(wpm_protective(1,:)));
+     end
+
+     %% compute FDR for WPMs (risk only)
+     ind = find(wpm_pv_risk(1,:)<=0.05);
+
+     if isempty(ind)~=1
+
+          for i=1:length(ind)
+               % combine local ranksum test and its p-value
+               n1(i) = nnz(wpm_pv_risk(1,:)<=wpm_pv_risk(1,ind(i)) & wpm_risk(1,:)>=wpm_risk(1,ind(i)));
+               n2(i) = nnz(wpm_pv_risk(2:end,:)<=wpm_pv_risk(1,ind(i)) & wpm_risk(2:end,:)>= wpm_risk(1,ind(i)))/N;
+          end
+
+          fdr = n2./n1;
+
+          clear n1 n2
+
+          fdrWPM_risk = ones(size(wpm_risk(1,:)));
+
+          % sort fdr based on wpm_pv_risk and wpm_degree_local
+          testM = [fdr' wpm_pv_risk(1,ind)' round(wpm_risk(1,ind)')];
+
+          [testM idx] = sortrows(testM,-1);
+
+          for i=1:size(testM,1)
+               indtmp = find(testM(:,2)>=testM(i,2) & testM(:,3)<=testM(i,3));
+               fdrnew(i) = min(testM(indtmp,1));
+          end
+
+          % assign FDR to WPMs
+          fdrWPM_risk(ind(idx)) = fdrnew;
+          clear fdr fdrnew
+     else
+          fdrWPM_risk = ones(size(wpm_risk(1,:)));
+     end
+     
+     %% compute FDR for PATH (protective and risk)
      ind = find(path_pv(1,:)<=0.05);
      if isempty(ind)~=1
  
           for i=1:length(ind)
-               % based on geometric mean of local ranksum test
-               m1(i) = nnz(path_pv(1,:)<=path_pv(1,ind(i)));
-               m2(i) = nnz(path_pv(2:end,:)<=path_pv(1,ind(i)))/N;
-    
                n1(i) = nnz(path_pv(1,:)<=path_pv(1,ind(i)) & path(1,:)>=path(1,ind(i)));
                n2(i) = nnz(path_pv(2:end,:)<=path_pv(1,ind(i)) & path(2:end,:)>=path(1,ind(i)))/N; 
           end
 
-          fdr1 = m2./m1;
-          fdr2 = n2./n1;
+          fdr = n2./n1;
 
-          clear m1 m2 n1 n2
+          clear n1 n2
  
-          fdrPATH1 = ones(size(path(1,:)));
-          fdrPATH2 = ones(size(path(1,:)));
-
-          % sort fdr based on bpm scores 
-          testM = [fdr1' path_pv(1,ind)'];
-          [testM idx] = sortrows(testM,[-2]);
-
-          for i=1:size(testM,1)
-               testM(i,1) = min(testM(1:i,1));
-          end
-
-          % assign FDR to PATHs
-          fdrPATH1(ind(idx)) = testM(:,1);
+          fdrPATH = ones(size(path(1,:)));
 
           % sort fdr based on PATH scores
-          testM = [fdr2' path_pv(1,ind)' path(1,ind)'];
-          [testM idx] = sortrows(testM,[-2 3]);
+          testM = [fdr' path_pv(1,ind)' path(1,ind)'];
+          [testM idx] = sortrows(testM,-1);
 
           for i=1:size(testM,1)
-               testM(i,1) = min(testM(1:i,1));
+               indtmp = find(testM(:,2)>=testM(i,2) & testM(:,3)<=testM(i,3));
+               fdrnew(i) = min(testM(indtmp,1));
           end
 
-          clear fdr1 fdr2
+          % assign FDR to PATHs
+          fdrPATH(ind(idx)) = fdrnew;
+
+          clear fdr fdrnew
+     else
+          fdrPATH = ones(size(path(1,:)));
+     end
+
+     %% compute FDR for PATH (protective)
+     ind = find(path_pv_protective(1,:)<=0.05);
+     if isempty(ind)~=1
+
+          for i=1:length(ind)
+               n1(i) = nnz(path_pv_protective(1,:)<=path_pv_protective(1,ind(i)) & path_protective(1,:)>=path_protective(1,ind(i)));
+               n2(i) = nnz(path_pv_protective(2:end,:)<=path_pv_protective(1,ind(i)) & path_protective(2:end,:)>=path_protective(1,ind(i)))/N;
+          end
+
+          fdr = n2./n1;
+
+          clear n1 n2
+
+          fdrPATH_protective = ones(size(path_protective(1,:)));
+
+          % sort fdr based on PATH scores
+          testM = [fdr' path_pv_protective(1,ind)' path_protective(1,ind)'];
+          [testM idx] = sortrows(testM,-1);
+
+          for i=1:size(testM,1)
+               indtmp = find(testM(:,2)>=testM(i,2) & testM(:,3)<=testM(i,3));
+               fdrnew(i) = min(testM(indtmp,1));
+          end
+          
+          % assign FDR to PATHs
+          fdrPATH_protective(ind(idx)) = fdrnew;
+     
+          clear fdr fdrnew
+     else
+          fdrPATH_protective = ones(size(path_protective(1,:)));
+     end
+
+      %% compute FDR for PATH (risk)
+     ind = find(path_pv_risk(1,:)<=0.05);
+     if isempty(ind)~=1
+
+          for i=1:length(ind)
+               n1(i) = nnz(path_pv_risk(1,:)<=path_pv_risk(1,ind(i)) & path_risk(1,:)>=path_risk(1,ind(i)));
+               n2(i) = nnz(path_pv_risk(2:end,:)<=path_pv_risk(1,ind(i)) & path_risk(2:end,:)>=path_risk(1,ind(i)))/N;
+          end
+
+          fdr = n2./n1;
+
+          clear n1 n2
+
+          fdrPATH_risk = ones(size(path_risk(1,:)));
+
+          % sort fdr based on PATH scores
+          testM = [fdr' path_pv_risk(1,ind)' path_risk(1,ind)'];
+          [testM idx] = sortrows(testM,-1);
+
+          for i=1:size(testM,1)
+               indtmp = find(testM(:,2)>=testM(i,2) & testM(:,3)<=testM(i,3));
+               fdrnew(i) = min(testM(indtmp,1));
+          end
+
 
           % assign FDR to PATHs
-          fdrPATH2(ind(idx)) = testM(:,1);
+          fdrPATH_risk(ind(idx)) = fdrnew;
+          clear fdr fdrnew
+
+     else
+          fdrPATH_risk = ones(size(path_risk(1,:)));
      end
 
      wpm_ranksum = wpm(1,:);
@@ -205,6 +385,6 @@ else
      outputfile = sprintf('results_%s_%s_R0.mat',genesetname,ssmFile);
 end
 
-if exist('fdrBPM2','var')|exist('fdrWPM2','var')|exist('fdrPATH2','var')
+if exist('fdrBPM','var')|exist('fdrWPM','var')|exist('fdrPATH','var')
      save(outputfile,'fdr*','*_ranksum','*_pv')
 end
