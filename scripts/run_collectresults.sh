@@ -78,6 +78,6 @@ if [ -z "${validationDir}" ]; then
      nice matlab -nodisplay -nodesktop -nosplash -r "collectresults('results_${ssmFile}',${fdrCutoff},'${ssmFile}','${bpmind}','${snpPathwayFile}','${snpGeneMappingFile}')" </dev/null> /dev/null
 else
      validationfile=${BRIDGEPATH}/${validationDir}/results_${ssmFile}
-     matbg "collectresults('results_#{ssmFile}',${fdrCutoff},'${ssmFile}','${bpmind}','${snpPathwayFile}','${snpGeneMappingFile}','${validationfile}')" matbg_$model.log
+     matbg "collectresults('results_${ssmFile}',${fdrCutoff},'${ssmFile}','${bpmind}','${snpPathwayFile}','${snpGeneMappingFile}','${validationfile}')" matbg_$model.log
 fi
 

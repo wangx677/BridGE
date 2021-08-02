@@ -45,7 +45,7 @@ elseif strcmp(model,'combined')
           ssmFile = sprintf('ssM_mhygeSSI_alpha1%s_alpha2%s_combined',num2str(alpha1),num2str(alpha2));
      end
 elseif strcmp(model,'AA')
-     ssmFile = 'ssM_lr_cassi_pv0.05';
+     ssmFile = 'ssM_lr_cassi_pv0.25';
 end
 
 % check if result file exist
@@ -84,7 +84,7 @@ if R==0
           parallelhygssi(model,marginal,alpha1,alpha2,nWorker,kk,R);
      elseif strcmp(model,'AA')
           % compute SNP-SNP interaction based on logistic regression
-          system(sprintf('%s/scripts/runcassi.sh gwas_data_final LR 0.05 %s',getenv('BRIDGEPATH'),num2str(R)));
+          system(sprintf('%s/scripts/runcassi.sh gwas_data_final LR 0.25 %s',getenv('BRIDGEPATH'),num2str(R)));
      end
 else
      % ssM matrix from random phenotype labels
@@ -130,10 +130,10 @@ else
           end
           outputtmp = table(FID,PID,phenonew);
           writetable(outputtmp,'phenonewtmp.txt','Delimiter',' ','WriteVariableNames',0);
-          system('plink --bfile gwas_data_final --pheno phenonewtmp.txt --make-bed --out plinktmp');
+          system('plink --bfile gwas_data_final --noweb --pheno phenonewtmp.txt --make-bed --out plinktmp');
 
           % compute SNP-SNP interaction based on logistic regression               
-          system(sprintf('%s/scripts/runcassi.sh %s LR 0.05 %s',getenv('BRIDGEPATH'),'plinktmp',num2str(R)));
+          system(sprintf('%s/scripts/runcassi.sh %s LR 0.25 %s',getenv('BRIDGEPATH'),'plinktmp',num2str(R)));
 
           system('rm plinktmp.* phenonewtmp.txt')
      end

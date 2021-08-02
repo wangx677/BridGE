@@ -57,5 +57,5 @@ if [ -z "${maf}" ]; then maf=0.05; fi
 if [ -z "${hwe}" ]; then hwe=0.000001; fi
 
 # qc based on mind geno maf and hwe
-plink1.9 --bfile ${PlinkFile} --noweb --allow-no-sex --mind ${mind} --geno ${geno} --maf ${maf} --hwe ${hwe} --make-bed --out ${OutputFile} > /dev/null
+plink1.9 --bfile ${PlinkFile} --noweb --allow-no-sex --mind ${mind} --geno ${geno} --maf ${maf} --hwe ${hwe} --snps-only 'just-acgt' --make-bed --out ${OutputFile} > /dev/null
 

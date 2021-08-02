@@ -1,0 +1,63 @@
+This pipeline is used to evaluate gene-gene interaction using GWAS.
+
+STEP 1: Use "process_data_genes.sh" to extract SNPs that can be mapped to given list of gene from GWAS data.
+
+process_data_genes.sh  PROJECTDIR GENELIST GWASFILE MAPPINGDISTANCE
+
+PROJECTDIR is the project directory where you will save intermediate and final results for your analysis.
+GENELIST is a text file with each line is a gene.
+GWASFILE is the gwas plink file without file extension.
+MAPPINGDISTANCE defines the mapping distance between a SNP and a gene. For example, if assign each SNP to any upstream and downstream genegenes within 50kb, use input 50000.
+
+
+THE FOLLOWING STEPS NEED TO BE RUN UNDER YOUR PROJECTDIR.
+
+
+STEP 2: Use "run_ssM.sh" to compute mhygeSSI SNP-SNP interaction for real and randomized data.
+
+run_ssM.sh PROJECTDIR MARGINAL N1 N2
+
+PROJECTDIR is the project directory where you will save intermediate and final results for your analysis.
+MARGINAL is used to decide which genetic interaction measurement to use. For hygeSSI: MARGINAL=1, for mhygeSSI: MARGINAL=0
+N1 is the sample permutation starting number. N1=0 is the real data 
+N2 is the sample permutation ending number.
+
+
+STEP 3: Use "prepare_snpsets.m" to generate SNP to gene mapping file. 
+
+matlab -nodisplay -nodesktop -nosplash -r "prepare_snpsets('gene_annotation',MAPPINGDISTANCE);exit" </dev/null> /dev/null
+
+
+STEP 4: use "update_ssM_ld.m" to remove interactions that might caused by linkage disequilibrium (LD).
+
+matlab -nodisplay -nodesktop -nosplash -r "update_ssM_ld('SSMFILE');exit" </dev/null> /dev/null
+
+SSMFILE is the SNP-SNP interaction file generated from STEP 3. 
+
+Repeat this for all real and random SSMFILEs
+
+
+STEP 5: use "getdensity.m" to evaluate gene-gene interactions based on interaction density and ranksum test.
+
+matlab -nodisplay -nodesktop -nosplash -r "getdensity('SSMFILE',R);exit" </dev/null> /dev/null
+
+SSMFILE is the SNP-SNP interaction file generated from STEP 3 without "R*.mat", for example 'ssM_mhygeSSI_alpha10.05_alpha20.05_DD'.
+R is the indicator for real or randomized data. R=0 means using SSMFILE from real data, R=n means using SSMFILE from nth randomized data.
+
+Repeat this for all real and random SSMFILEs.
+
+
+STEP 6: use "density2pvalue.m" to evaluate sample permutation p-value.
+
+matlab -nodisplay -nodesktop -nosplash -r "density2pvalue('SSMFILE',N);exit" </dev/null> /dev/null
+
+SSMFILE is the SNP-SNP interaction file generated from STEP 3 without "R*.mat", for example 'ssM_mhygeSSI_alpha10.05_alpha20.05_DD'.
+N is the total number of sample permutation. For example, N=1000
+
+STEP 7: use "computeFDR.m" to evaluate False Discovery Rate.
+
+matlab -nodisplay -nodesktop -nosplash -r "computeFDR('SSMFILE',N);exit" </dev/null> /dev/null &&
+
+SSMFILE is the SNP-SNP interaction file generated from STEP 3 without "R*.mat", for example 'ssM_mhygeSSI_alpha10.05_alpha20.05_DD'.
+N is the total number of sample permutation. For example, N=1000
+

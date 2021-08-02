@@ -43,9 +43,9 @@ if isfield(geneset,'entrezids')
 end
 
 % remove pathways that with size less than minPath or greater than maxPath
-ind = find(sum(geneset.gpmatrix)>=minPath & sum(geneset.gpmatrix)<=maxPath);
-geneset.gpmatrix = geneset.gpmatrix(:,ind);
-geneset.pathwaynames = geneset.pathwaynames(ind);
+% ind = find(sum(geneset.gpmatrix)>=minPath & sum(geneset.gpmatrix)<=maxPath);
+% geneset.gpmatrix = geneset.gpmatrix(:,ind);
+% geneset.pathwaynames = geneset.pathwaynames(ind);
 
 % remove genes that can't be mapped to any pathways
 % ind = find(sum(geneset.gpmatrix,2)==0);
