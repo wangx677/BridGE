@@ -26,7 +26,7 @@ OPTIONAL INPUTS
 
   --pvalueCutoff=PVALUECUTOFF
     Compute FDRs for BPMs with permutation p-value less than pvalueCutoff
-    Default is 0.005
+    Default is 0.05
 
   --bpmindFile=BPMINDFILE
     index file for pathway-level interactions
@@ -58,7 +58,7 @@ done
 # set defaults
 if [ -z "${projectDir}" ]; then projectDir=`pwd`; fi
 if [ -z "${minPath}" ]; then minPath=10; fi
-if [ -z "${pvalueCutoff}" ]; then pvalueCutoff=0.005; fi
+if [ -z "${pvalueCutoff}" ]; then pvalueCutoff=0.05; fi
 if [ -z "${bpmindFile}" ]; then bpmindFile=BPMind.mat; fi
 if [ -z "${samplePerms}" ]; then samplePerms=10; fi
 

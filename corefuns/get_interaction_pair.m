@@ -232,8 +232,8 @@ output_path1_snp = table(snps,genes,snp_mean_gi,snp_mean_gi_bg,gi_fold,gi_hyge);
 
 [tmp ind] = sort(gi_fold,'descend');
 output_path1_snp = output_path1_snp(ind,:);
-output_path1_snp = output_path1_snp(find(output_path1_snp.gi_fold>1.2),:);
-output_path1_snp = sortrows(output_path1_snp,{'gi_hyge'},{'descend'});
+output_path1_snp = output_path1_snp(find(output_path1_snp.gi_fold>1.2 & output_path1_snp.gi_hyge>=-log10(0.05)),:);
+output_path1_snp = sortrows(output_path1_snp,{'gi_fold'},{'descend'});
 
 if exist('outputfile','var')
      writetable(output_path1_snp,sprintf('%s.xls',outputfile),'Sheet',2);
@@ -264,8 +264,8 @@ if isequal(pathname1,pathname2)~=1
 
      [tmp ind] = sort(gi_fold,'descend');
      output_path2_snp = output_path2_snp(ind,:);
-     output_path2_snp = output_path2_snp(find(output_path2_snp.gi_fold>1.2),:);
-     output_path2_snp = sortrows(output_path2_snp,{'gi_hyge'},{'descend'});
+     output_path2_snp = output_path2_snp(find(output_path2_snp.gi_fold>1.2 & output_path2_snp.gi_hyge>=-log10(0.05)),:);
+     output_path2_snp = sortrows(output_path2_snp,{'gi_fold'},{'descend'});
       
      if exist('outputfile','var')
           writetable(output_path2_snp,sprintf('%s.xls',outputfile),'Sheet',3);

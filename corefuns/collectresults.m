@@ -114,7 +114,7 @@ if (length(ind_bpm)>0 | length(ind_wpm)>0 | length(ind_path)>0)
                
                if length(idx)>0
                     for j=1:min(20,length(idx))
-                         bpm_snp1_tmp{j} = strjoin({output_path1_snp.snps{j},output_path1_snp.genes{j},sprintf('%.2f',output_path1_snp.gi_fold(j))},'_');
+                         bpm_snp1_tmp{j} = strjoin({output_path1_snp.snps{j},output_path1_snp.genes{j},sprintf('fold%.2f',output_path1_snp.gi_fold(j)),sprintf('hyge%.2f',output_path1_snp.gi_hyge(j))},'_');
                     end
 
                     bpm_path1_drivers{i} = strjoin(bpm_snp1_tmp,';');
@@ -125,7 +125,7 @@ if (length(ind_bpm)>0 | length(ind_wpm)>0 | length(ind_path)>0)
                idx = find(output_path2_snp.gi_fold>1);
                if length(idx)>0
                     for j=1:min(20,length(idx))
-                         bpm_snp2_tmp{j} = strjoin({output_path2_snp.snps{j},output_path2_snp.genes{j},sprintf('%.2f',output_path2_snp.gi_fold(j))},'_');
+                         bpm_snp2_tmp{j} = strjoin({output_path2_snp.snps{j},output_path2_snp.genes{j},sprintf('fold%.2f',output_path2_snp.gi_fold(j)),sprintf('hyge%.2f',output_path2_snp.gi_hyge(j))},'_');
                     end
                     
                     bpm_path2_drivers{i} = strjoin(bpm_snp2_tmp,';');
@@ -164,7 +164,7 @@ if (length(ind_bpm)>0 | length(ind_wpm)>0 | length(ind_path)>0)
                
                if length(idx)>0
                     for j=1:min(20,length(idx))
-                         wpm_snp_tmp{j} = strjoin({output_path_snp.snps{j},output_path_snp.genes{j},sprintf('%.2f',output_path_snp.gi_fold(j))},'_');
+                         wpm_snp_tmp{j} = strjoin({output_path_snp.snps{j},output_path_snp.genes{j},sprintf('fold%.2f',output_path_snp.gi_fold(j)),sprintf('hyge%.2f',output_path_snp.gi_hyge(j))},'_');
                     end
                
                     wpm_path_drivers{i} = strjoin(wpm_snp_tmp,';');
