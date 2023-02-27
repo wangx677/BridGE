@@ -40,6 +40,12 @@ $*
     snpGeneMappingFile is a mat file that indicate SNP to gene membership.
     Default is snpgenemapping_50kb.mat
 
+  --densityCutoff=DENSITYCUTOFF
+    densityCutoff is a density cutoff used to binarize SNP-SNP interaction network for 
+    identification of driver SNPs/genes. For example, densityCutoff=0.01 means using top 1%
+    of the interactions to derive driver SNPs and genes.
+    if densityCutoff is not setting, then a SNP-SNP interaction score cutoff of 0.2 will be 
+    used to binarize the network. This is default for mhygeSSI and hygeSSI networks.
 EOF
 }
 
@@ -59,6 +65,7 @@ do
      --bpmind=*) bpmind=${argument/*=/""} ;;
      --snpPathwayFile=*) snpPathwayFile=${argument/*=/""} ;;
      --snpGeneMappingFile=*) snpGeneMappingFile=${argument/*=/""} ;;
+     --densityCutoff=*) densityCutoff=${argument/*=/""} ;;
      --help) _usage; exit;;
      esac
 done
@@ -75,9 +82,19 @@ if [ -z "${ssmFile}" ]; then echo "Please specify ssmFile to proceed."; exit; fi
 
 
 if [ -z "${validationDir}" ]; then
+    if [ -z "${densityCutoff}" ]; then
      nice matlab -nodisplay -nodesktop -nosplash -r "collectresults('results_${ssmFile}',${fdrCutoff},'${ssmFile}','${bpmind}','${snpPathwayFile}','${snpGeneMappingFile}')" </dev/null> /dev/null
+     else
+         nice matlab -nodisplay -nodesktop -nosplash -r "collectresults('results_${ssmFile}',${fdrCutoff},'${ssmFile}','${bpmind}','${snpPathwayFile}','${snpGeneMappingFile}',${densityCutoff})" </dev/null> /dev/null
+
+     fi
 else
      validationfile=${BRIDGEPATH}/${validationDir}/results_${ssmFile}
-     matbg "collectresults('results_${ssmFile}',${fdrCutoff},'${ssmFile}','${bpmind}','${snpPathwayFile}','${snpGeneMappingFile}','${validationfile}')" matbg_$model.log
+     if [ -z "${densityCutoff}" ]; then
+          nice matlab -nodisplay -nodesktop -nosplash -r "collectresults('results_${ssmFile}',${fdrCutoff},'${ssmFile}','${bpmind}','${snpPathwayFile}','${snpGeneMappingFile}','${validationfile}')" </dev/null> /dev/null
+      else
+          nice matlab -nodisplay -nodesktop -nosplash -r "collectresults('results_${ssmFile}',${fdrCutoff},'${ssmFile}','${bpmind}','${snpPathwayFile}','${snpGeneMappingFile}','${validationfile}',${densityCutoff})" </dev/null> /dev/null
+
+      fi
 fi
 

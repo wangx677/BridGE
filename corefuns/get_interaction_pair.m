@@ -1,11 +1,17 @@
-function [output_path1_snp, output_path2_snp] = get_interaction_pair(pathname1,pathname2,effect,ssmfile,bpmindfile,snppathwayfile,snpgenemappingfile,outputfile);
+function [output_path1_snp, output_path2_snp] = get_interaction_pair(pathname1,pathname2,effect,ssmfile,bpmindfile,snppathwayfile,snpgenemappingfile,densitycutoff,outputfile);
 
-%pathname1 = 'KEGG_RIBOSOME';
-%pathname2 = 'KEGG_PARKINSONS_DISEASE';
-% effect = 'proective'; % 1: protective; 2: risk
-%resultfile = 'BPM_chi2_density0.1_ssM_hygeSSI_alpha10.05_alpha20.05_combined_R0.mat';
-%snppathwayfile='snp_pathway_min10_max300.mat';
+% Inputs:
+% pathname1: first pathway name 
+% pathname2: second pathway name, if pathname1 and pathbname2 are the same, it is a WPM
+% effect: 'proective' or 'risk.  1: protective; 2: risk
+% ssmfile: SNP-SNP interaction file
+% bpmindfile: file that stores BPM and WPM indexes
+% snppathwayfile: SNP to pathway mapping file
+% snpgenemappingfile: SNP to gene mapping file
+% densitycutoff: use the defined density to binarize the SNP-SNP interaction network and find driver SNPs and genes
+% outputfile: name of the output file
 
+% load files
 load(ssmfile)
 load(bpmindfile)
 load(snppathwayfile)
@@ -15,9 +21,16 @@ load(snpgenemappingfile)
 load('SNPdataAR.mat'); SNPdataAR = SNPdata.data;
 load('SNPdataAD.mat'); SNPdataAD = SNPdata.data;
 
+% identify disease model
 model = strsplit(ssmfile,'_');
 model = model{end-1};
 
+% if disease model is not RR, DD, RD and combined, we don't know which disease model it is
+if strcmp(model,'RR')~=1 && strcmp(model,'DD')~=1 && strcmp(model,'RD')~=1 && strcmp(model,'combined')~=1
+   model = '';
+end
+
+% identify effect
 if ismember(effect,'protective')
      ssM_dis = squareform(ssM{1});
      if exist('maxidx')
@@ -29,21 +42,38 @@ else
           maxidx = squareform(maxidx{2});
      end
 end
-ssM_all_dis = ssM_dis;
-N = size(ssM_dis,1);
+
+% binarize the SNP-SNP interaction matrix
+% ssM_dis_bin is the binarized matrix
+if exist('densitycutoff','var') == 1
+   dcutoff = quantile(squareform(ssM_dis),1-densitycutoff);
+   ssM_dis_bin = ssM_dis > dcutoff;
+else
+    ssM_dis_bin = ssM_dis > 0.2;
+end
+
+ssM_all_dis = ssM_dis;  % SNP-SNP interaction matrix
+ssM_all_dis_bin = ssM_dis_bin;
+
+N = size(ssM_dis,1); % number of SNPs
 clear ssM
 
 if isequal(pathname1,pathname2)
+     % for WPM, identify SNP-SNP interaction matrix
      ii = find(ismember(snpset.pathwaynames,pathname1)==1);
      ind1 = WPM.ind{ii};
      ind2 = WPM.ind{ii};
      ssM_dis = ssM_dis(ind1,ind2);
-     ssM_dis = tril(ssM_dis);
+     ssM_dis_bin = ssM_dis_bin(ind1,ind2);
+     % WPM is a symmetric matrix, only keep lower half interactions
+     ssM_dis = tril(ssM_dis); 
+     ssM_dis_bin = tril(ssM_dis_bin);
      if exist('maxidx','var')
           maxidx = maxidx(ind1,ind2);
           maxidx  = tril(maxidx);
      end
 else
+     % for BPM, identify SNP-SNP interaction matrix
      if isfield(BPM,'path1')
            nn = find(ismember(BPM.path1,pathname1)==1 & ismember(BPM.path2,pathname2)==1);
      else
@@ -53,11 +83,13 @@ else
      ind1 = BPM.ind1{nn};
      ind2 = BPM.ind2{nn};
      ssM_dis = ssM_dis(ind1,ind2);
+     ssM_dis_bin = ssM_dis_bin(ind1,ind2);
      if exist('maxidx','var')
           maxidx = maxidx(ind1,ind2);
      end
 end
 
+% identify corresponding genes
 ind1_snp = SNPdata.rsid(ind1);
 ind2_snp = SNPdata.rsid(ind2);
 
@@ -101,7 +133,9 @@ else
      end
 end
 
-[i j] = find(ssM_dis>0.2);
+
+% identify SNP-SNP interaction pairs
+[i j] = find(ssM_dis_bin>0);
 
 snps1 = ind1_snp(i);
 snps2 = ind2_snp(j);
@@ -207,26 +241,36 @@ for k=1:length(i)
 
 end
 
-output_pair = table(snps1,genes1,snps2,genes2,GItype,freq_case,freq_control,GI);
+if isempty(model)~=1
+   output_pair = table(snps1,genes1,snps2,genes2,GItype,freq_case,freq_control,GI);
+else
+   output_pair = table(snps1,genes1,snps2,genes2,GI);
+end
 output_pair = sortrows(output_pair,{'GI'},{'descend'});
 
 if exist('outputfile','var')
      writetable(output_pair,sprintf('%s.xls',outputfile),'Sheet',1);
 end
 
-ind1_mean_GI  = sum(ssM_dis>0.2,2)/length(ind2);
+% identify driver SNPs/genes
+% make WPM SNP-SNP interaction matrix symmetric again
+if isequal(pathname1,pathname2)==1
+     ssM_dis_bin = max(ssM_dis_bin,ssM_dis_bin');
+end
+
+ind1_mean_GI  = sum(ssM_dis_bin>0, 2)/length(ind2);
 
 for i=1:length(ind1)
      idx(i) = find(ismember(SNPdata.rsid,ind1_snp(i)));
 end
-ind1_mean_GI_bg = sum(ssM_all_dis(idx,:)>0.2,2)/size(ssM_all_dis,1);
+ind1_mean_GI_bg = sum(ssM_all_dis_bin(idx,:)>0, 2)/size(ssM_all_dis_bin,1);
 
 snps = ind1_snp;
 genes = ind1_gene';
 snp_mean_gi = ind1_mean_GI;
 snp_mean_gi_bg = ind1_mean_GI_bg;
 gi_fold = snp_mean_gi./snp_mean_gi_bg;
-gi_hyge = hygetest(N,length(ind2),sum(ssM_dis>0.2,2),sum(ssM_all_dis(idx,:)>0.2,2));
+gi_hyge = hygetest(N,length(ind2),sum(ssM_dis_bin>0, 2),sum(ssM_all_dis_bin(idx,:)>0, 2));
 gi_fold(isnan(gi_fold)) = 0;
 output_path1_snp = table(snps,genes,snp_mean_gi,snp_mean_gi_bg,gi_fold,gi_hyge);
 
@@ -242,19 +286,19 @@ end
 clear idx
 
 if isequal(pathname1,pathname2)~=1     
-     ind2_mean_GI  = sum(ssM_dis>0.2)/length(ind1)';
+     ind2_mean_GI  = sum(ssM_dis_bin>0)/length(ind1)';
      
      for i=1:length(ind2)
           idx(i) = find(ismember(SNPdata.rsid,ind2_snp(i)));
      end
-     ind2_mean_GI_bg = sum(ssM_all_dis(:,idx)>0.2)/size(ssM_all_dis,1);
+     ind2_mean_GI_bg = sum(ssM_all_dis_bin(:,idx)>0)/size(ssM_all_dis_bin,1);
 
      snps = ind2_snp;
      genes = ind2_gene';
      snp_mean_gi = ind2_mean_GI;
      snp_mean_gi_bg = ind2_mean_GI_bg;
      gi_fold = snp_mean_gi./snp_mean_gi_bg;
-     gi_hyge = hygetest(N,length(ind1), sum(ssM_dis>0.2),sum(ssM_all_dis(:,idx)>0.2));
+     gi_hyge = hygetest(N,length(ind1), sum(ssM_dis_bin>0),sum(ssM_all_dis_bin(:,idx)>0));
      snp_mean_gi = snp_mean_gi';
      snp_mean_gi_bg = snp_mean_gi_bg';
      gi_fold = gi_fold';

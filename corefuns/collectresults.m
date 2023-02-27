@@ -1,6 +1,13 @@
-function collectresults(resultfile,fdrcut,ssmfile,bpmindfile,snppathwayfile,snpgenemappingfile)
-% resultfile='/project/csbio/wwang/BridGE_nobin/project_PD_Simon/results_ssM_hygeSSI_alpha10.05_alpha20.05_combined_R0.mat';
-% validationfile='/project/csbio/wwang/BridGE_nobin/project_PD_NGRC/results_ssM_hygeSSI_alpha10.05_alpha20.05_combined_R0.mat';
+function collectresults(resultfile,fdrcut,ssmfile,bpmindfile,snppathwayfile,snpgenemappingfile,densitycutoff)
+
+% Inputs:
+% resultfile: result file that stores statistical information
+% fdrcut: fdr cutoff
+% ssmfile: SNP-SNP interaction file
+% bpmindfile: BPM and WPM index file
+% snppathwayfile: SNP to pathway mapping file
+% snpgenemappingfile: SNP to gene mapping file
+% densitycutoff: used to binarize SNP-SNP interaction network for identification of driver SNPs/genes
 
 diseasemodel = strsplit(resultfile,'_');
 diseasemodel = diseasemodel{end-1};
@@ -10,13 +17,13 @@ load(resultfile)
 
 if exist('fdrBPM2','var')
      fdrBPM = fdrBPM2;
-else
+elseif exist('fdrBPM','var')~=1
      fdrBPM = ones(1,length(bpm_pv))';
 end
 
 if exist('fdrWPM2','var') 
      fdrWPM = fdrWPM2;
-else
+elseif exist('fdrWPM','var')~=1
      if exist('wpm_pv','var')
           fdrWPM = ones(1,length(wpm_pv));
      end
@@ -24,7 +31,7 @@ end
 
 if exist('fdrPATH2','var')
      fdrPATH = fdrPATH2;
-else
+elseif exist('fdrPATH','var')~=1
      if exist('path_pv','var')
           fdrPATH = ones(1,length(path_pv));
      end
@@ -109,7 +116,11 @@ if (length(ind_bpm)>0 | length(ind_wpm)>0 | length(ind_path)>0)
           eff_bpm = reshape(eff_bpm,length(eff_bpm),1);
                     
           for i = 1:length(ind_bpm)
-               [output_path1_snp, output_path2_snp] = get_interaction_pair(path1{i},path2{i},eff_bpm{i},ssmfile,bpmindfile,snppathwayfile,snpgenemappingfile);
+               if exist('densitycutoff','var')==1
+                  [output_path1_snp, output_path2_snp] = get_interaction_pair(path1{i},path2{i},eff_bpm{i},ssmfile,bpmindfile,snppathwayfile,snpgenemappingfile,densitycutoff);
+               else
+                  [output_path1_snp, output_path2_snp] = get_interaction_pair(path1{i},path2{i},eff_bpm{i},ssmfile,bpmindfile,snppathwayfile,snpgenemappingfile);
+               end 
                idx = find(output_path1_snp.gi_fold>1);
                
                if length(idx)>0
@@ -159,7 +170,12 @@ if (length(ind_bpm)>0 | length(ind_wpm)>0 | length(ind_path)>0)
           eff_wpm = reshape(eff_wpm,length(eff_wpm),1);
 
           for i=1:length(ind_wpm)
+               if exist('densitycutoff','var') == 1
+               [output_path_snp] = get_interaction_pair(path_wpm{i},path_wpm{i},eff_wpm{i},ssmfile,bpmindfile,snppathwayfile,snpgenemappingfile,densitycutoff);
+               else
                [output_path_snp] = get_interaction_pair(path_wpm{i},path_wpm{i},eff_wpm{i},ssmfile,bpmindfile,snppathwayfile,snpgenemappingfile);
+               end
+
                idx = find(output_path_snp.gi_fold>1);
                
                if length(idx)>0
